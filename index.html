@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Тренажер ОГЭ по немецкому | ОГЭ на ausgezeichnet</title>
+  <style>
+    :root {
+      --primary: #ff6b00;
+      --primary-hover: #e55e00;
+      --bg: #f5f7fa;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --error: #dc2626;
+      --error-bg: #fee2e2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    .score-badge {
+      background: #fff3eb;
+      color: var(--primary);
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text);
+    }
+
+    .tab-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      margin-bottom: 20px;
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .task-tag {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+
+    .task-instruction {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      background: #f8fafc;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .sentence {
+      font-size: 18px;
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+
+    .word-prompt {
+      display: inline-block;
+      background: #e2e8f0;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-left: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    input[type="text"] {
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+      min-width: 240px;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+    }
+
+    input[type="text"].correct {
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    input[type="text"].wrong {
+      border-color: var(--error);
+      background: var(--error-bg);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .option-btn {
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      background: #fff;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .option-btn.correct {
+      border-color: var(--success);
+      background: var(--success-bg);
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .option-btn.wrong {
+      border-color: var(--error);
+      background: var(--error-bg);
+      color: var(--error);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .feedback {
+      margin-top: 14px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .feedback.ok { color: var(--success); }
+    .feedback.err { color: var(--error); }
+
+    .controls-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">Тренажёр ОГЭ <span>Немецкий язык</span></div>
+    <div class="score-badge">Баллы: <span id="score">0</span> / <span id="total">0</span></div>
+  </header>
+
+  <div class="container">
+    <div class="tabs" id="tabs">
+      <button class="tab-btn active" data-section="grammar">Задания 20–28 (Грамматика)</button>
+      <button class="tab-btn" data-section="wordform">Задания 29–34 (Словообразование)</button>
+      <button class="tab-btn" data-section="reading">Чтение (Понимание текста)</button>
+    </div>
+
+    <div id="task-container"></div>
+  </div>
+
+  <script>
+    const tasksData = {
+      grammar: [
+        {
+          tag: "Задание 20 • Грамматика",
+          instruction: "Преобразуйте слово в скобках так, чтобы оно грамматически соответствовало содержанию предложения.",
+          sentence: "Gestern ___ wir den ganzen Tag im Stadtpark verbracht.",
+          prompt: "HABEN",
+          answer: "haben",
+          explanation: "Perfekt с глаголом verbringen образуется при помощи haben (1-е лицо мн. ч. — wir haben)."
+        },
+        {
+          tag: "Задание 21 • Грамматика",
+          instruction: "Преобразуйте слово в скобках так, чтобы оно грамматически соответствовало содержанию предложения.",
+          sentence: "Dieses Buch ist viel ___ als der Film, den wir gestern gesehen haben.",
+          prompt: "INTERESSANT",
+          answer: "interessanter",
+          explanation: "Сравнительная степень прилагательного (Komparativ) с союзом als: interessant → interessanter."
+        },
+        {
+          tag: "Задание 22 • Грамматика",
+          instruction: "Преобразуйте слово в скобках так, чтобы оно грамматически соответствовало содержанию предложения.",
+          sentence: "In unserer Schule werden jedes Jahr viele interessante Projekte ___.",
+          prompt: "MACHEN",
+          answer: "gemacht",
+          explanation: "Passiv Präsens: werden + Partizip II (machen → gemacht)."
+        }
+      ],
+      wordform: [
+        {
+          tag: "Задание 29 • Словообразование",
+          instruction: "Образуйте от опорного слова однокоренное слово так, чтобы оно грамматически и лексически соответствовало тексту.",
+          sentence: "Berlin ist eine sehr ___ Stadt mit vielen Museen und Theatern.",
+          prompt: "BERÜHMT",
+          answer: "berühmte",
+          explanation: "Прилагательное перед существительным женского рода в именительном падеже с неопределённым артиклем: eine berühmte Stadt."
+        },
+        {
+          tag: "Задание 30 • Словообразование",
+          instruction: "Образуйте от опорного слова однокоренное слово так, чтобы оно грамматически и лексически соответствовало тексту.",
+          sentence: "Für diese Arbeit braucht man viel Geduld und ___.",
+          prompt: "KREATIV",
+          answer: "Kreativität",
+          explanation: "От прилагательного kreativ образуется существительное женского рода с суффиксом -ität: Kreativität."
+        }
+      ],
+      reading: [
+        {
+          tag: "Задание на чтение • Верно / Неверно",
+          instruction: "Прочитайте фрагмент текста и выберите правильный вариант ответа.",
+          sentence: "«Viele Jugendliche in Deutschland verbringen ihre Freizeit gern in Sportvereinen. Besonders beliebt sind Fußball, Schwimmen und Tennis. Die Mitgliedschaft kostet meistens nicht viel Geld.» — Что утверждается в тексте?",
+          options: [
+            "Подростки в Германии редко занимаются спортом.",
+            "Членство в спортивных клубах обычно недорогое.",
+            "Самый популярный вид спорта в Германии — баскетбол."
+          ],
+          correctIndex: 1,
+          explanation: "В тексте прямо сказано: «Die Mitgliedschaft kostet meistens nicht viel Geld» (Членство обычно стоит недорого)."
+        }
+      ]
+    };
+
+    let currentSection = "grammar";
+    let currentIndex = 0;
+    let score = 0;
+    let answeredTasks = new Set();
+
+    const taskContainer = document.getElementById("task-container");
+    const scoreEl = document.getElementById("score");
+    const totalEl = document.getElementById("total");
+
+    function updateTotalCount() {
+      const total = Object.values(tasksData).reduce((acc, arr) => acc + arr.length, 0);
+      totalEl.textContent = total;
+    }
+
+    function renderTask() {
+      const sectionTasks = tasksData[currentSection];
+      const task = sectionTasks[currentIndex];
+      const taskId = `${currentSection}-${currentIndex}`;
+
+      let interactionHtml = "";
+
+      if (task.options) {
+        interactionHtml = `
+          <div class="options-grid">
+            ${task.options.map((opt, idx) => `
+${opt}
+).join("")} </div> ;
+} else {
+interactionHtml = <div class="input-row"> <input type="text" id="user-answer" placeholder="Введите ответ на немецком..." autocomplete="off" /> <button class="btn" onclick="checkTextAnswer()">Проверить</button> </div>;
+}
+taskContainer.innerHTML = <div class="card"> <div class="task-header"> <span class="task-tag">${task.tag} (${currentIndex + 1} из ${sectionTasks.length})</span> </div> <div class="task-instruction">${task.instruction}</div> <div class="sentence"> ${task.sentence} ${task.prompt ?${task.prompt}: ""} </div> ${interactionHtml} <div class="feedback" id="feedback"></div> <div class="controls-footer"> <button class="btn btn-secondary" onclick="prevTask()" ${currentIndex === 0 ? "disabled" : ""}>← Назад</button> <button class="btn" onclick="nextTask()"> ${currentIndex < sectionTasks.length - 1 ? "Следующее задание →" : "В начало раздела ↻"} </button> </div> </div>;
+const input = document.getElementById("user-answer");
+if (input) {
+input.addEventListener("keypress", (e) => {
+if (e.key === "Enter") checkTextAnswer();
+});
+}
+}
+window.checkTextAnswer = function() {
+const task = tasksData[currentSection][currentIndex];
+const input = document.getElementById("user-answer");
+const feedback = document.getElementById("feedback");
+const taskId = ${currentSection}-${currentIndex};
+const userVal = input.value.trim().toLowerCase();
+if (!userVal) return;
+if (userVal === task.answer.toLowerCase()) {
+input.className = "correct";
+feedback.className = "feedback ok";
+feedback.textContent = ✓ Верно! ${task.explanation};
+if (!answeredTasks.has(taskId)) {
+score++;
+answeredTasks.add(taskId);
+scoreEl.textContent = score;
+}
+} else {
+input.className = "wrong";
+feedback.className = "feedback err";
+feedback.textContent = ✕ Неверно. Правильный ответ: ${task.answer}. ${task.explanation};
+answeredTasks.add(taskId);
+}
+};
+window.checkOption = function(selectedIdx) {
+const task = tasksData[currentSection][currentIndex];
+const buttons = document.querySelectorAll(".option-btn");
+const feedback = document.getElementById("feedback");
+const taskId = ${currentSection}-${currentIndex};
+buttons.forEach((btn, idx) => {
+btn.disabled = true;
+if (idx === task.correctIndex) btn.classList.add("correct");
+else if (idx === selectedIdx) btn.classList.add("wrong");
+});
+if (selectedIdx === task.correctIndex) {
+feedback.className = "feedback ok";
+feedback.textContent = ✓ Верно! ${task.explanation};
+if (!answeredTasks.has(taskId)) {
+score++;
+answeredTasks.add(taskId);
+scoreEl.textContent = score;
+}
+} else {
+feedback.className = "feedback err";
+feedback.textContent = ✕ Неверно. ${task.explanation};
+answeredTasks.add(taskId);
+}
+};
+window.nextTask = function() {
+const sectionTasks = tasksData[currentSection];
+currentIndex = (currentIndex + 1) % sectionTasks.length;
+renderTask();
+};
+window.prevTask = function() {
+if (currentIndex > 0) {
+currentIndex--;
+renderTask();
+}
+};
+document.getElementById("tabs").addEventListener("click", (e) => {
+if (!e.target.classList.contains("tab-btn")) return;
+document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+e.target.classList.add("active");
+currentSection = e.target.dataset.section;
+currentIndex = 0;
+renderTask();
+});
+updateTotalCount();
+renderTask();

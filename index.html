@@ -1,443 +1,518 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Тренажер ОГЭ по немецкому | ОГЭ на ausgezeichnet</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deutsch OGE — Тренажёр по немецкому языку</title>
   <style>
     :root {
-      --primary: #ff6b00;
-      --primary-hover: #e55e00;
-      --bg: #f5f7fa;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --success: #16a34a;
-      --success-bg: #dcfce7;
-      --error: #dc2626;
-      --error-bg: #fee2e2;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --primary: #1f2937;
+      --accent: #eab308;
+      --accent-dark: #ca8a04;
+      --red: #dc2626;
+      --green: #16a34a;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
       color: var(--text);
       line-height: 1.5;
+      padding-bottom: 40px;
     }
 
     header {
-      background: var(--card-bg);
+      background: var(--primary);
+      color: #fff;
+      padding: 18px 16px;
+      text-align: center;
+      border-bottom: 4px solid var(--accent);
+    }
+
+    header h1 { font-size: 1.35rem; margin-bottom: 4px; }
+    header p { font-size: 0.85rem; color: #d1d5db; }
+
+    .stats-bar {
+      background: #fff;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
       border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--text);
-    }
-
-    .logo span {
-      color: var(--primary);
-    }
-
-    .score-badge {
-      background: #fff3eb;
-      color: var(--primary);
-      font-weight: 700;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 14px;
-    }
-
-    .container {
-      max-width: 860px;
-      margin: 32px auto;
-      padding: 0 16px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-    }
-
-    .tab-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 10px 18px;
-      border-radius: 10px;
+      font-size: 0.9rem;
       font-weight: 600;
-      font-size: 14px;
+    }
+
+    .stats-bar span { color: var(--green); }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 12px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    nav button {
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
-      color: var(--text);
+      color: var(--primary);
     }
 
-    .tab-btn:hover {
-      border-color: var(--primary);
-    }
-
-    .tab-btn.active {
+    nav button.active {
       background: var(--primary);
       color: #fff;
       border-color: var(--primary);
     }
 
+    main {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 14px;
+    }
+
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+
     .card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-      margin-bottom: 20px;
+      background: var(--card);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      border: 1px solid var(--border);
     }
 
     .task-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+      color: var(--muted);
     }
 
-    .task-tag {
-      font-size: 12px;
+    .base-word {
+      background: #fef3c7;
+      color: #92400e;
       font-weight: 700;
-      text-transform: uppercase;
-      color: var(--muted);
+      padding: 3px 9px;
+      border-radius: 6px;
       letter-spacing: 0.5px;
-    }
-
-    .task-instruction {
-      font-size: 15px;
-      color: var(--muted);
-      margin-bottom: 20px;
-      background: #f8fafc;
-      padding: 12px 16px;
-      border-radius: 10px;
-      border-left: 4px solid var(--primary);
     }
 
     .sentence {
-      font-size: 18px;
-      margin-bottom: 16px;
-      line-height: 1.7;
-    }
-
-    .word-prompt {
-      display: inline-block;
-      background: #e2e8f0;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-left: 6px;
-      letter-spacing: 0.5px;
+      font-size: 1.05rem;
+      margin-bottom: 14px;
     }
 
     .input-row {
       display: flex;
-      gap: 12px;
+      gap: 8px;
       flex-wrap: wrap;
-      align-items: center;
     }
 
     input[type="text"] {
-      padding: 12px 16px;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      font-size: 16px;
-      outline: none;
-      min-width: 240px;
-      transition: border-color 0.2s;
+      flex: 1;
+      min-width: 180px;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
     }
 
     input[type="text"]:focus {
+      outline: none;
       border-color: var(--primary);
     }
 
-    input[type="text"].correct {
-      border-color: var(--success);
-      background: var(--success-bg);
-    }
-
-    input[type="text"].wrong {
-      border-color: var(--error);
-      background: var(--error-bg);
-    }
-
-    .options-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .option-btn {
-      padding: 12px 16px;
-      border: 2px solid var(--border);
-      background: #fff;
-      border-radius: 10px;
-      text-align: left;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .option-btn:hover {
-      border-color: var(--primary);
-    }
-
-    .option-btn.correct {
-      border-color: var(--success);
-      background: var(--success-bg);
-      color: var(--success);
-      font-weight: 600;
-    }
-
-    .option-btn.wrong {
-      border-color: var(--error);
-      background: var(--error-bg);
-      color: var(--error);
-    }
-
-    .btn {
-      background: var(--primary);
-      color: #fff;
+    .btn-check {
+      background: var(--accent);
+      color: #111;
       border: none;
-      padding: 12px 22px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s;
     }
 
-    .btn:hover {
-      background: var(--primary-hover);
+    .btn-check:hover { background: var(--accent-dark); }
+
+    .umlaut-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
     }
 
-    .btn-secondary {
-      background: #e2e8f0;
-      color: var(--text);
-    }
-
-    .btn-secondary:hover {
-      background: #cbd5e1;
+    .umlaut-btn {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.95rem;
+      cursor: pointer;
     }
 
     .feedback {
-      margin-top: 14px;
-      font-size: 14px;
-      font-weight: 600;
+      margin-top: 10px;
+      font-size: 0.92rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+      display: none;
     }
 
-    .feedback.ok { color: var(--success); }
-    .feedback.err { color: var(--error); }
+    .feedback.ok {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+    }
 
-    .controls-footer {
+    .feedback.err {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* Словарь */
+    .topic-filters {
       display: flex;
-      justify-content: space-between;
-      margin-top: 24px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .topic-btn {
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .topic-btn.active {
+      background: var(--accent);
+      border-color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    .word-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .word-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .word-de {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .word-ru {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin: 4px 0;
+    }
+
+    .word-ex {
+      font-size: 0.84rem;
+      font-style: italic;
+      color: #374151;
+      border-top: 1px dashed var(--border);
+      padding-top: 6px;
+      margin-top: 6px;
+    }
+
+    /* Правила */
+    details.rule-item {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+
+    details.rule-item summary {
+      font-weight: 700;
+      font-size: 1.02rem;
+      cursor: pointer;
+      color: var(--primary);
+    }
+
+    .rule-body {
+      margin-top: 10px;
+      font-size: 0.94rem;
+      color: #374151;
+    }
+
+    .rule-body ul {
+      padding-left: 20px;
+      margin-top: 6px;
+    }
+
+    .rule-body li { margin-bottom: 5px; }
+
+    code.tag {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">Тренажёр ОГЭ <span>Немецкий язык</span></div>
-    <div class="score-badge">Баллы: <span id="score">0</span> / <span id="total">0</span></div>
-  </header>
+<header>
+  <h1>🇩🇪 Deutsch OGE — Подготовка к экзамену</h1>
+  <p>Грамматика (20–28) • Словообразование (29–34) • Словарь • Правила</p>
+</header>
 
-  <div class="container">
-    <div class="tabs" id="tabs">
-      <button class="tab-btn active" data-section="grammar">Задания 20–28 (Грамматика)</button>
-      <button class="tab-btn" data-section="wordform">Задания 29–34 (Словообразование)</button>
-      <button class="tab-btn" data-section="reading">Чтение (Понимание текста)</button>
-    </div>
+<div class="stats-bar">
+  <div>Решено верно: <span id="scoreCount">0</span> из <b id="totalCount">0</b></div>
+</div>
 
-    <div id="task-container"></div>
-  </div>
+<nav>
+  <button class="active" onclick="switchTab('grammar', this)">Грамматика (20–28)</button>
+  <button onclick="switchTab('wordform', this)">Словообразование (29–34)</button>
+  <button onclick="switchTab('vocab', this)">Словарь по темам</button>
+  <button onclick="switchTab('rules', this)">Правила ОГЭ</button>
+</nav>
 
-  <script>
-    const tasksData = {
-      grammar: [
-        {
-          tag: "Задание 20 • Грамматика",
-          instruction: "Преобразуйте слово в скобках так, чтобы оно грамматически соответствовало содержанию предложения.",
-          sentence: "Gestern ___ wir den ganzen Tag im Stadtpark verbracht.",
-          prompt: "HABEN",
-          answer: "haben",
-          explanation: "Perfekt с глаголом verbringen образуется при помощи haben (1-е лицо мн. ч. — wir haben)."
-        },
-        {
-          tag: "Задание 21 • Грамматика",
-          instruction: "Преобразуйте слово в скобках так, чтобы оно грамматически соответствовало содержанию предложения.",
-          sentence: "Dieses Buch ist viel ___ als der Film, den wir gestern gesehen haben.",
-          prompt: "INTERESSANT",
-          answer: "interessanter",
-          explanation: "Сравнительная степень прилагательного (Komparativ) с союзом als: interessant → interessanter."
-        },
-        {
-          tag: "Задание 22 • Грамматика",
-          instruction: "Преобразуйте слово в скобках так, чтобы оно грамматически соответствовало содержанию предложения.",
-          sentence: "In unserer Schule werden jedes Jahr viele interessante Projekte ___.",
-          prompt: "MACHEN",
-          answer: "gemacht",
-          explanation: "Passiv Präsens: werden + Partizip II (machen → gemacht)."
-        }
-      ],
-      wordform: [
-        {
-          tag: "Задание 29 • Словообразование",
-          instruction: "Образуйте от опорного слова однокоренное слово так, чтобы оно грамматически и лексически соответствовало тексту.",
-          sentence: "Berlin ist eine sehr ___ Stadt mit vielen Museen und Theatern.",
-          prompt: "BERÜHMT",
-          answer: "berühmte",
-          explanation: "Прилагательное перед существительным женского рода в именительном падеже с неопределённым артиклем: eine berühmte Stadt."
-        },
-        {
-          tag: "Задание 30 • Словообразование",
-          instruction: "Образуйте от опорного слова однокоренное слово так, чтобы оно грамматически и лексически соответствовало тексту.",
-          sentence: "Für diese Arbeit braucht man viel Geduld und ___.",
-          prompt: "KREATIV",
-          answer: "Kreativität",
-          explanation: "От прилагательного kreativ образуется существительное женского рода с суффиксом -ität: Kreativität."
-        }
-      ],
-      reading: [
-        {
-          tag: "Задание на чтение • Верно / Неверно",
-          instruction: "Прочитайте фрагмент текста и выберите правильный вариант ответа.",
-          sentence: "«Viele Jugendliche in Deutschland verbringen ihre Freizeit gern in Sportvereinen. Besonders beliebt sind Fußball, Schwimmen und Tennis. Die Mitgliedschaft kostet meistens nicht viel Geld.» — Что утверждается в тексте?",
-          options: [
-            "Подростки в Германии редко занимаются спортом.",
-            "Членство в спортивных клубах обычно недорогое.",
-            "Самый популярный вид спорта в Германии — баскетбол."
-          ],
-          correctIndex: 1,
-          explanation: "В тексте прямо сказано: «Die Mitgliedschaft kostet meistens nicht viel Geld» (Членство обычно стоит недорого)."
-        }
-      ]
-    };
+<main>
+  <!-- ВКЛАДКА 1: ГРАММАТИКА -->
+  <section id="grammar" class="tab-section active">
+    <div id="grammarList"></div>
+  </section>
 
-    let currentSection = "grammar";
-    let currentIndex = 0;
-    let score = 0;
-renderansweredTasks = new Set();
+  <!-- ВКЛАДКА 2: СЛОВООБРАЗОВАНИЕ -->
+  <section id="wordform" class="tab-section">
+    <div id="wordformList"></div>
+  </section>
 
-    const taskContainer = document.getElementById("task-container");
-    const scoreEl = document.getElementById("score");
-    const totalEl = document.getElementById("total");
+  <!-- ВКЛАДКА 3: СЛОВАРЬ -->
+  <section id="vocab" class="tab-section">
+    <div class="topic-filters" id="topicFilters"></div>
+    <div class="word-grid" id="vocabGrid"></div>
+  </section>
 
-    function updateTotalCount() {
-      const total = Object.values(tasksData).reduce((acc, arr) => acc + arr.length, 0);
-      totalEl.textContent = total;
-    }
+  <!-- ВКЛАДКА 4: ПРАВИЛА -->
+  <section id="rules" class="tab-section">
+    <details class="rule-item" open>
+      <summary>1. Времена глаголов: Perfekt и Präteritum</summary>
+      <div class="rule-body">
+        <p>В заданиях 20–28 чаще всего проверяются прошедшие времена:</p>
+        <ul>
+          <li><b>Präteritum</b> — используется в рассказах и повествовании. Слабые глаголы: основа + <code class="tag">-te</code> (<code class="tag">machen → machte</code>). Сильные глаголы меняют корневую гласную (<code class="tag">gehen → ging</code>, <code class="tag">sehen → sah</code>).</li>
+          <li><b>Perfekt</b> — <code class="tag">haben / sein</code> + Partizip II (<code class="tag">ge- + основа + -t/-en</code>). С глаголами движения и изменения состояния ставится <code class="tag">sein</code> (<code class="tag">ist gefahren</code>).</li>
+        </ul>
+      </div>
+    </details>
 
-    function renderTask() {
-      const sectionTasks = tasksData[currentSection];
-      const task = sectionTasks[currentIndex];
-      const taskId = `${currentSection}-${currentIndex}`;
+    <details class="rule-item">
+      <summary>2. Склонение прилагательных (Adjektivdeklination)</summary>
+      <div class="rule-body">
+        <ul>
+          <li><b>После определённого артикля</b> (<code class="tag">der, die, das</code>): в Nominativ ед. числа окончание <code class="tag">-e</code>, во множественном числе и почти во всех косвенных падежах — <code class="tag">-en</code>.</li>
+          <li><b>После неопределённого артикля</b> (<code class="tag">ein, eine, kein, mein</code>): прилагательное показывает род в Nominativ (<code class="tag">ein guter Freund</code>, <code class="tag">eine gute Idee</code>, <code class="tag">ein gutes Buch</code>).</li>
+        </ul>
+      </div>
+    </details>
 
-      let interactionHtml = "";
+    <details class="rule-item">
+      <summary>3. Степени сравнения прилагательных и наречий</summary>
+      <div class="rule-body">
+        <ul>
+          <li><b>Komparativ (сравнительная):</b> основа + <code class="tag">-er</code> (<code class="tag">schnell → schneller</code>, часто умлаут: <code class="tag">alt → älter</code>).</li>
+          <li><b>Superlativ (превосходная):</b> <code class="tag">am ...-sten</code> или <code class="tag">der/die/das ...-ste</code> (<code class="tag">am besten</code>, <code class="tag">das größte Haus</code>).</li>
+          <li><b>Исключения:</b> <code class="tag">gut – besser – am besten</code>, <code class="tag">viel – mehr – am meisten</code>, <code class="tag">gern – lieber – am liebsten</code>.</li>
+        </ul>
+      </div>
+    </details>
 
-      if (task.options) {
-        interactionHtml = `
-          <div class="options-grid">
-            ${task.options.map((opt, idx) => `
-${opt}
-).join("")} </div> ;
-} else {
-interactionHtml = <div class="input-row"> <input type="text" id="user-answer" placeholder="Введите ответ на немецком..." autocomplete="off" /> <button class="btn" onclick="checkTextAnswer()">Проверить</button> </div>;
+    <details class="rule-item">
+      <summary>4. Местоимения и числительные</summary>
+      <div class="rule-body">
+        <ul>
+          <li><b>Личные местоимения:</b> меняются по падежам (<code class="tag">ich → mir / mich</code>, <code class="tag">wir → uns</code>, <code class="tag">sie → ihr / ihnen</code>).</li>
+          <li><b>Порядковые числительные:</b> до 19 добавляется <code class="tag">-te</code> (<code class="tag">der zweite</code>, исключения: <code class="tag">erste, dritte, siebte, achte</code>), от 20 — <code class="tag">-ste</code> (<code class="tag">der zwanzigste</code>).</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="rule-item">
+      <summary>5. Суффиксы и приставки словообразования (задания 29–34)</summary>
+      <div class="rule-body">
+        <ul>
+• 
+Прилагательные: -lich (freundlich), -ig (wichtig), -isch (typisch), -los (arbeitslos), -bar (lesbar).
+• 
+Существительные: -ung (die Lösung), -heit / -keit (die Gesundheit), -er для профессий/деятелей (der Lehrer).
+• 
+Отрицание: приставка un- (glücklich → unglücklich).
+// База заданий по грамматике (задания 20-28 ОГЭ)
+const grammarTasks = [
+{
+id: "g1",
+base: "FAHREN",
+text: "Im letzten Sommer ______ meine Familie ans Meer.",
+answer: "fuhr",
+rule: "Präteritum от сильного глагола fahren (3-е лицо ед. ч.) — fuhr."
+},
+{
+id: "g2",
+base: "GUT",
+text: "Das Wetter heute ist viel ______ als gestern.",
+answer: "besser",
+rule: "Исключение в сравнительной степени (Komparativ): gut → besser."
+},
+{
+id: "g3",
+base: "KINDER",
+text: "Die Lehrerin hilft den ______ bei den Hausaufgaben.",
+answer: "Kindern",
+rule: "Dativ множественного числа (кому? — детям) требует окончания -n: den Kindern."
+},
+{
+id: "g4",
+base: "ZWEI",
+text: "Meine Wohnung liegt im ______ Stock.",
+answer: "zweiten",
+rule: "Порядковое числительное в Dativ после im (in dem): zweiten."
+},
+{
+id: "g5",
+base: "SCHREIBEN",
+text: "Gestern habe ich einen langen Brief ______.",
+answer: "geschrieben",
+rule: "Perfekt: вспомогательный глагол habe уже есть, нужен Partizip II — geschrieben."
 }
-taskContainer.innerHTML = <div class="card"> <div class="task-header"> <span class="task-tag">${task.tag} (${currentIndex + 1} из ${sectionTasks.length})</span> </div> <div class="task-instruction">${task.instruction}</div> <div class="sentence"> ${task.sentence} ${task.prompt ?${task.prompt}: ""} </div> ${interactionHtml} <div class="feedback" id="feedback"></div> <div class="controls-footer"> <button class="btn btn-secondary" onclick="prevTask()" ${currentIndex === 0 ? "disabled" : ""}>← Назад</button> <button class="btn" onclick="nextTask()"> ${currentIndex < sectionTasks.length - 1 ? "Следующее задание →" : "В начало раздела ↻"} </button> </div> </div>;
-const input = document.getElementById("user-answer");
-if (input) {
-input.addEventListener("keypress", (e) => {
-if (e.key === "Enter") checkTextAnswer();
+];
+// База заданий по словообразованию (задания 29-34 ОГЭ)
+const wordformTasks = [
+{
+id: "w1",
+base: "FREUND",
+text: "Unsere neue Nachbarin ist sehr nett und ______.",
+answer: "freundlich",
+rule: "От существительного Freund образуем прилагательное с помощью суффикса -lich."
+},
+{
+id: "w2",
+base: "GESUND",
+text: "Sport und frische Luft sind sehr wichtig für die ______.",
+answer: "Gesundheit",
+rule: "Существительное женского рода образуется с помощью суффикса -heit."
+},
+{
+id: "w3",
+base: "GLÜCKLICH",
+text: "Er hat die Prüfung nicht bestanden und war sehr ______.",
+answer: "unglücklich",
+rule: "По смыслу (не сдал экзамен) требуется отрицательная приставка un-."
+},
+{
+id: "w4",
+base: "LEHREN",
+text: "Mein Onkel arbeitet als ______ in einer Schule.",
+answer: "Lehrer",
+rule: "Обозначение профессии от глагола lehren с помощью суффикса -er."
+},
+{
+id: "w5",
+base: "LÖSEN",
+text: "Wir haben endlich eine gute ______ für dieses Problem gefunden.",
+answer: "Lösung",
+rule: "От глагола lösen образуем существительное с суффиксом -ung."
+}
+];
+// Словарь по темам кодификатора ОГЭ
+const vocabulary = [
+{ topic: "Школа", de: "das Schulfach (die Schulfächer)", ru: "школьный предмет", ex: "Mein Lieblingsschulfach ist Deutsch." },
+{ topic: "Школа", de: "die Prüfung (-en)", ru: "экзамен", ex: "Wir bereiten uns auf die Prüfung vor." },
+{ topic: "Школа", de: "das Zeugnis (-se)", ru: "аттестат, табель с оценками", ex: "Er hat gute Noten im Zeugnis." },
+{ topic: "Семья и друзья", de: "sich verstehen (mit + Dat.)", ru: "ладить (с кем-либо)", ex: "Ich verstehe mich gut mit meinen Eltern." },
+{ topic: "Семья и друзья", de: "zuverlässig", ru: "надёжный", ex: "Ein echter Freund muss zuverlässig sein." },
+{ topic: "Здоровье и спорт", de: "sich erkälten", ru: "простудиться", ex: "Zieh dich warm an, sonst erkältest du dich!" },
+{ topic: "Здоровье и спорт", de: "die Ernährung", ru: "питание", ex: "Gesunde Ernährung ist wichtig für den Körper." },
+{ topic: "Природа и экология", de: "die Umwelt schützen", ru: "защищать окружающую среду", ex: "Jeder Mensch kann die Umwelt schützen." },
+{ topic: "Природа и экология", de: "der Müll", ru: "мусор", ex: "In Deutschland trennt man den Müll." },
+{ topic: "Путешествия", de: "die Sehenswürdigkeit (-en)", ru: "достопримечательность", ex: "Berlin hat viele Sehenswürdigkeiten." }
+];
+const solvedSet = new Set();
+const totalTasks = grammarTasks.length + wordformTasks.length;
+document.getElementById("totalCount").textContent = totalTasks;
+function updateScore() {
+document.getElementById("scoreCount").textContent = solvedSet.size;
+}
+function switchTab(tabId, btn) {
+document.querySelectorAll(".tab-section").forEach(s => s.classList.remove("active"));
+document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+document.getElementById(tabId).classList.add("active");
+btn.classList.add("active");
+}
+function insertUmlaut(inputId, char) {
+const input = document.getElementById(inputId);
+input.value += char;
+input.focus();
+}
+function renderTasks(tasks, containerId, label) {
+const container = document.getElementById(containerId);
+container.innerHTML = "";
+tasks.forEach((task, index) => {
+const inputId = inp_${task.id};
+const fbId = fb_${task.id};
+const card = document.createElement("div");
+card.className = "card";
+card.innerHTML = <div class="task-header"> <span>${label} №${index + 1}</span> <span class="base-word">${task.base}</span> </div> <div class="sentence">${task.text}</div> <div class="umlaut-bar"> ${["ä", "ö", "ü", "ß"].map(ch =>${ch}).join("")} </div> <div class="input-row"> <input type="text" id="${inputId}" placeholder="Введите слово..." autocomplete="off"> <button type="button" class="btn-check" onclick="checkAnswer('${task.id}', '${task.answer}', '${task.rule.replace(/'/g, "\\'")}')">Проверить</button> </div> <div class="feedback" id="${fbId}"></div> ;
+container.appendChild(card);
 });
 }
-}
-window.checkTextAnswer = function() {
-const task = tasksData[currentSection][currentIndex];
-const input = document.getElementById("user-answer");
-const feedback = document.getElementById("feedback");
-const taskId = ${currentSection}-${currentIndex};
-const userVal = input.value.trim().toLowerCase();
+function checkAnswer(id, correct, rule) {
+const input = document.getElementById(inp_${id});
+const fb = document.getElementById(fb_${id});
+const userVal = input.value.trim();
 if (!userVal) return;
-if (userVal === task.answer.toLowerCase()) {
-input.className = "correct";
-feedback.className = "feedback ok";
-feedback.textContent = ✓ Верно! ${task.explanation};
-if (!answeredTasks.has(taskId)) {
-score++;
-answeredTasks.add(taskId);
-scoreEl.textContent = score;
-}
+if (userVal.toLowerCase() === correct.toLowerCase()) {
+fb.className = "feedback ok";
+fb.innerHTML = ✅ <b>Верно!</b> (${correct}) — ${rule};
+solvedSet.add(id);
+updateScore();
 } else {
-input.className = "wrong";
-feedback.className = "feedback err";
-feedback.textContent = ✕ Неверно. Правильный ответ: ${task.answer}. ${task.explanation};
-answeredTasks.add(taskId);
+fb.className = "feedback err";
+fb.innerHTML = ❌ <b>Неверно.</b> Правильный ответ: <b>${correct}</b>. ${rule};
 }
-};
-window.checkOption = function(selectedIdx) {
-const task = tasksData[currentSection][currentIndex];
-const buttons = document.querySelectorAll(".option-btn");
-const feedback = document.getElementById("feedback");
-const taskId = ${currentSection}-${currentIndex};
-buttons.forEach((btn, idx) => {
-btn.disabled = true;
-if (idx === task.correctIndex) btn.classList.add("correct");
-else if (idx === selectedIdx) btn.classList.add("wrong");
-});
-if (selectedIdx === task.correctIndex) {
-feedback.className = "feedback ok";
-feedback.textContent = ✓ Верно! ${task.explanation};
-if (!answeredTasks.has(taskId)) {
-score++;
-answeredTasks.add(taskId);
-scoreEl.textContent = score;
 }
-} else {
-feedback.className = "feedback err";
-feedback.textContent = ✕ Неверно. ${task.explanation};
-answeredTasks.add(taskId);
+function renderVocab(selectedTopic = "Все") {
+const topics = ["Все", ...new Set(vocabulary.map(v => v.topic))];
+const filterBox = document.getElementById("topicFilters");
+filterBox.innerHTML = topics.map(t => <button class="topic-btn ${t === selectedTopic ? "active" : ""}" onclick="renderVocab('${t}')">${t}</button>).join("");
+const grid = document.getElementById("vocabGrid");
+const filtered = selectedTopic === "Все" ? vocabulary : vocabulary.filter(v => v.topic === selectedTopic);
+grid.innerHTML = filtered.map(item => <div class="word-card"> <div class="word-de">${item.de}</div> <div class="word-ru">${item.ru}</div> <div class="word-ex">${item.ex}</div> </div>).join("");
 }
-};
-window.nextTask = function() {
-const sectionTasks = tasksData[currentSection];
-currentIndex = (currentIndex + 1) % sectionTasks.length;
-renderTask();
-};
-window.prevTask = function() {
-if (currentIndex > 0) {
-currentIndex--;
-renderTask();
-}
-};
-document.getElementById("tabs").addEventListener("click", (e) => {
-if (!e.target.classList.contains("tab-btn")) return;
-document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-e.target.classList.add("active");
-currentSection = e.target.dataset.section;
-currentIndex = 0;
-renderTask();
-});
-updateTotalCount();
+// Инициализация (один вызов без дублей)
+renderTasks(grammarTasks, "grammarList", "Задание");
+renderTasks(wordformTasks, "wordformList", "Задание");
+renderVocab();

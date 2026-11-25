@@ -942,7 +942,22 @@
     }
   }
 
+      let currentTopic = "Все";
+  let hideTranslations = false;
+
+  function toggleTranslations() {
+    hideTranslations = !hideTranslations;
+    const btn = document.getElementById("toggleTrBtn");
+    btn.textContent = hideTranslations ? "👁 Показать все переводы" : "🙈 Скрыть перевод";
+    renderVocab(currentTopic);
+  }
+
+  function revealOne(el) {
+    el.classList.remove("hidden-tr");
+  }
+
   function renderVocab(selectedTopic = "Все") {
+    currentTopic = selectedTopic;
     const topics = ["Все", ...new Set(vocabulary.map(v => v.topic))];
     const filterBox = document.getElementById("topicFilters");
     filterBox.innerHTML = topics.map(t => `
@@ -954,11 +969,12 @@
     grid.innerHTML = filtered.map(item => `
       <div class="word-card">
         <div class="word-de">${item.de}</div>
-        <div class="word-ru">${item.ru}</div>
+        <div class="word-ru ${hideTranslations ? "hidden-tr" : ""}" onclick="revealOne(this)">${item.ru}</div>
         <div class="word-ex">${item.ex}</div>
       </div>
     `).join("");
   }
+
 
   renderTasks(grammarTasks, "grammarList", "Задание");
   renderTasks(wordformTasks, "wordformList", "Задание");

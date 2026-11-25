@@ -1061,10 +1061,119 @@
     `).join("");
   }
 
+    const examTexts = [
+    {
+      title: "Часть 1. Грамматика (20–28): Ein Ausflug nach Dresden",
+      segments: [
+        "Im letzten Monat ",
+        { num: 20, base: "MACHEN", ans: "machte", rule: "Präteritum от machen (3-е лицо ед. ч.) — machte." },
+        " unsere Klasse einen tollen Ausflug nach Dresden. Wir ",
+        { num: 21, base: "FAHREN", ans: "fuhren", rule: "Präteritum от сильного глагола fahren для wir — fuhren." },
+        " früh am Morgen mit dem Zug los. Die Reise dauerte nur zwei Stunden. In Dresden ",
+        { num: 22, base: "WIR", ans: "uns", rule: "Местоимение wir в Akkusativ (встретил кого?) — uns." },
+        " ein netter Reiseführer am Bahnhof abholte. Zuerst besuchten wir die Zwinger-Galerie, die eines der ",
+        { num: 23, base: "BERÜHMT", ans: "berühmtesten", rule: "Superlativ прилагательного в Genitiv мн. числа — berühmtesten." },
+        " Museen Deutschlands ist. Dort sahen ",
+        { num: 24, base: "VIEL", ans: "viele", rule: "Множественное число без артикля (многие туристы) — viele." },
+        " Touristen aus der ganzen Welt. Nach dem Mittagessen gingen wir an der Elbe entlang. Das Wetter war viel ",
+        { num: 25, base: "WARM", ans: "wärmer", rule: "Komparativ от warm получает умлаут — wärmer." },
+        " als am Tag zuvor. Am Abend kauften alle Schüler Souvenirs für ",
+        { num: 26, base: "SIE", ans: "ihre", rule: "Притяжательное местоимение для «они» (их родителей, Akk. Pl.) — ihre." },
+        " Eltern. Dieser Tag ",
+        { num: 27, base: "WERDEN", ans: "wird", rule: "Futur I (3-е лицо ед. ч. — этот день останется) — wird." },
+        " uns noch lange in Erinnerung bleiben, weil wir so viele ",
+        { num: 28, base: "FOTO", ans: "Fotos", rule: "Множественное число от das Foto — die Fotos." },
+        " gemacht haben."
+      ]
+    },
+    {
+      title: "Часть 2. Словообразование (29–34): Mein Traumjob",
+      segments: [
+        "Viele Jugendliche denken schon in der Schule über ihre ",
+        { num: 29, base: "BERUF", ans: "berufliche", rule: "Прилагательное «профессиональное (будущее)» от Beruf — berufliche." },
+        " Zukunft nach. Ich möchte gern Journalist werden, weil dieser Beruf sehr ",
+        { num: 30, base: "INTERESSE", ans: "interessant", rule: "Прилагательное «интересный» от Interesse — interessant." },
+        " ist. Ein guter Journalist muss neugierig, aktiv und ",
+        { num: 31, base: "FREUND", ans: "freundlich", rule: "Прилагательное «дружелюбный» с суффиксом -lich — freundlich." },
+        " sein. Außerdem braucht man für diese Arbeit eine gute ",
+        { num: 32, base: "AUSBILDEN", ans: "Ausbildung", rule: "Существительное «образование/обучение» с суффиксом -ung — Ausbildung." },
+        ". Natürlich gibt es in jedem Job auch ",
+        { num: 33, base: "SCHWIERIG", ans: "Schwierigkeiten", rule: "Существительное во мн. ч. «трудности» (-keit + -en) — Schwierigkeiten." },
+        ", aber ich bin sicher, dass ich die richtige ",
+        { num: 34, base: "ENTSCHEIDEN", ans: "Entscheidung", rule: "Существительное «решение» от entscheiden с суффиксом -ung — Entscheidung." },
+        " getroffen habe."
+      ]
+    }
+  ];
+
+  let lastFocusedExamInput = null;
+
+  function insertToActive(char) {
+    if (lastFocusedExamInput) {
+      lastFocusedExamInput.value += char;
+      lastFocusedExamInput.focus();
+    }
+  }
+
+  function renderExam() {
+    const container = document.getElementById("examContainer");
+    container.innerHTML = examTexts.map(block => {
+      const htmlText = block.segments.map(seg => {
+        if (typeof seg === "string") return seg;
+        return `
+          <span class="inline-gap">
+            <b>(${seg.num})</b>
+            <input type="text" class="inline-input" id="ex_${seg.num}" onfocus="lastFocusedExamInput = this" autocomplete="off">
+            <span class="inline-base">${seg.base}</span>
+          </span>
+        `;
+      }).join("");
+      return `
+        <div class="card">
+          <h3 style="margin-bottom: 12px; font-size: 1.05rem; color: var(--primary);">${block.title}</h3>
+          <div class="exam-text-box">${htmlText}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function checkFullExam() {
+    let correctCount = 0;
+    let totalGaps = 0;
+    let mistakesHtml = "";
+
+    examTexts.forEach(block => {
+      block.segments.forEach(seg => {
+        if (typeof seg === "object") {
+          totalGaps++;
+          const inp = document.getElementById(`ex_${seg.num}`);
+          const val = inp.value.trim();
+          inp.classList.remove("correct-inp", "wrong-inp");
+
+          if (val.toLowerCase() === seg.ans.toLowerCase()) {
+            correctCount++;
+            inp.classList.add("correct-inp");
+          } else {
+            inp.classList.add("wrong-inp");
+            mistakesHtml += `<li><b>Задание ${seg.num} (${seg.base}):</b> ваш ответ «${val || "пусто"}» → правильно <b>${seg.ans}</b> (${seg.rule})</li>`;
+          }
+        }
+      });
+    });
+
+    const summary = document.getElementById("examSummary");
+    summary.innerHTML = `
+      <div class="card" style="border-left: 5px solid ${correctCount === totalGaps ? "var(--green)" : "var(--accent)"};">
+        <h3 style="margin-bottom: 8px;">Результат варианта: ${correctCount} из ${totalGaps} баллов</h3>
+        ${mistakesHtml ? `<ul style="padding-left: 18px; font-size: 0.92rem;">${mistakesHtml}</ul>` : `<p style="color: var(--green); font-weight: 600;">🎉 Идеально! Все задания варианта решены без единой ошибки.</p>`}
+      </div>
+    `;
+  }
 
   renderTasks(grammarTasks, "grammarList", "Задание");
   renderTasks(wordformTasks, "wordformList", "Задание");
   renderVocab();
+  renderExam();
 </script>
 </body>
 </html>

@@ -230,11 +230,51 @@
       color: var(--primary);
     }
 
-    .word-ru {
+        .word-ru {
       color: var(--muted);
       font-size: 0.95rem;
       margin: 4px 0;
     }
+
+    .word-ru.hidden-tr {
+      background: #e5e7eb;
+      color: transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+
+    .word-ru.hidden-tr::after {
+      content: "👁 Показать перевод";
+      color: #374151;
+      font-size: 0.82rem;
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .vocab-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .btn-toggle-tr {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
 
     .word-ex {
       font-size: 0.84rem;
@@ -312,10 +352,13 @@
   </section>
 
   <!-- ВКЛАДКА 3: СЛОВАРЬ -->
-  <section id="vocab" class="tab-section">
-    <div class="topic-filters" id="topicFilters"></div>
+    <section id="vocab" class="tab-section">
+    <div class="vocab-controls">
+      <div class="topic-filters" id="topicFilters" style="margin-bottom: 0;"></div>
+      <button type="button" class="btn-toggle-tr" id="toggleTrBtn" onclick="toggleTranslations()">🙈 Скрыть перевод</button>
+    </div>
     <div class="word-grid" id="vocabGrid"></div>
-  </section>
+    </section>
 
   <!-- ВКЛАДКА 4: ПРАВИЛА -->
   <section id="rules" class="tab-section">
@@ -722,18 +765,117 @@
     }
   ];
 
-  const vocabulary = [
+    const vocabulary = [
+    // 1. Школа (10 слов)
     { topic: "Школа", de: "das Schulfach (die Schulfächer)", ru: "школьный предмет", ex: "Mein Lieblingsschulfach ist Deutsch." },
     { topic: "Школа", de: "die Prüfung (-en)", ru: "экзамен", ex: "Wir bereiten uns auf die Prüfung vor." },
     { topic: "Школа", de: "das Zeugnis (-se)", ru: "аттестат, табель с оценками", ex: "Er hat gute Noten im Zeugnis." },
+    { topic: "Школа", de: "der Stundenplan (¨-e)", ru: "расписание уроков", ex: "Am Montag haben wir sechs Stunden laut Stundenplan." },
+    { topic: "Школа", de: "die Schuluniform (-en)", ru: "школьная форма", ex: "In unserer Schule trägt man eine Schuluniform." },
+    { topic: "Школа", de: "der Mitschüler (-)", ru: "одноклассник", ex: "Meine Mitschüler sind sehr freundlich." },
+    { topic: "Школа", de: "aufmerksam", ru: "внимательный", ex: "Im Unterricht muss man aufmerksam sein." },
+    { topic: "Школа", de: "auswendig lernen", ru: "учить наизусть", ex: "Wir müssen dieses Gedicht auswendig lernen." },
+    { topic: "Школа", de: "eine Prüfung bestehen (bestand, bestanden)", ru: "сдать экзамен", ex: "Ich hoffe, dass ich alle Prüfungen bestehe." },
+    { topic: "Школа", de: "die Aula (die Aulen)", ru: "актовый зал", ex: "Das Schulkonzert findet in der Aula statt." },
+
+    // 2. Семья и друзья (10 слов)
     { topic: "Семья и друзья", de: "sich verstehen (mit + Dat.)", ru: "ладить (с кем-либо)", ex: "Ich verstehe mich gut mit meinen Eltern." },
     { topic: "Семья и друзья", de: "zuverlässig", ru: "надёжный", ex: "Ein echter Freund muss zuverlässig sein." },
+    { topic: "Семья и друзья", de: "die Geschwister (Pl.)", ru: "братья и сёстры", ex: "Hast du Geschwister? — Ja, einen Bruder." },
+    { topic: "Семья и друзья", de: "streiten (stritt, gestritten)", ru: "ссориться", ex: "Gute Freunde streiten selten miteinander." },
+    { topic: "Семья и друзья", de: "der Verwandte (-n)", ru: "родственник", ex: "Am Wochenende besuchen wir unsere Verwandten." },
+    { topic: "Семья и друзья", de: "hilfsbereit", ru: "отзывчивый, готовый помочь", ex: "Meine ältere Schwester ist immer hilfsbereit." },
+    { topic: "Семья и друзья", de: "vertrauen (+ Dat.)", ru: "доверять (кому-либо)", ex: "Ich vertraue meinem besten Freund völlig." },
+    { topic: "Семья и друзья", de: "gemeinsam", ru: "совместный, вместе", ex: "Wir verbringen viel Zeit gemeinsam." },
+    { topic: "Семья и друзья", de: "das Einzelkind (-er)", ru: "единственный ребёнок в семье", ex: "Er ist ein Einzelkind und hat keine Geschwister." },
+    { topic: "Семья и друзья", de: "sich verabreden (mit + Dat.)", ru: "договариваться о встрече", ex: "Ich habe mich mit Anna für Samstag verabredet." },
+
+    // 3. Свободное время и хобби (10 слов)
+    { topic: "Свободное время", de: "die Freizeit gestalten", ru: "организовывать досуг", ex: "Jeder gestaltet seine Freizeit anders." },
+    { topic: "Свободное время", de: "sich interessieren (für + Akk.)", ru: "интересоваться (чем-либо)", ex: "Ich interessiere mich für Musik und Fotografie." },
+    { topic: "Свободное время", de: "der Verein (-e)", ru: "клуб, секция, кружок", ex: "Mein Bruder trainiert in einem Sportverein." },
+    { topic: "Свободное время", de: "aufnehmen (nahm auf, aufgenommen)", ru: "снимать (видео), записывать", ex: "Sie nimmt gern kurze Videos für ihren Blog auf." },
+    { topic: "Свободное время", de: "die Ausstellung (-en)", ru: "выставка", ex: "Am Sonntag besuchen wir eine neue Ausstellung." },
+    { topic: "Свободное время", de: "sammeln", ru: "собирать, коллекционировать", ex: "Früher habe ich Briefmarken und Münzen gesammelt." },
+    { topic: "Свободное время", de: "das Gesellschaftsspiel (-e)", ru: "настольная игра", ex: "Abends spielen wir oft Gesellschaftsspiele." },
+    { topic: "Свободное время", de: "faulenzen", ru: "лениться, бездельничать", ex: "Am Sonntag möchte ich einfach mal faulenzen." },
+    { topic: "Свободное время", de: "die Eintrittskarte (-n)", ru: "входной билет", ex: "Die Eintrittskarten ins Kino kosten heute weniger." },
+    { topic: "Свободное время", de: "spannend", ru: "увлекательный, захватывающий", ex: "Dieses Buch ist wirklich sehr spannend." },
+
+    // 4. Здоровье и спорт (10 слов)
     { topic: "Здоровье и спорт", de: "sich erkälten", ru: "простудиться", ex: "Zieh dich warm an, sonst erkältest du dich!" },
     { topic: "Здоровье и спорт", de: "die Ernährung", ru: "питание", ex: "Gesunde Ernährung ist wichtig für den Körper." },
+    { topic: "Здоровье и спорт", de: "verschreiben (verschrieb, verschrieben)", ru: "выписывать (лекарство)", ex: "Der Arzt hat mir Tabletten gegen Husten verschrieben." },
+    { topic: "Здоровье и спорт", de: "sich fit halten", ru: "поддерживать себя в форме", ex: "Durch Joggen halte ich mich fit." },
+    { topic: "Здоровье и спорт", de: "das Fieber", ru: "температура, жар", ex: "Er hat hohes Fieber und bleibt im Bett." },
+    { topic: "Здоровье и спорт", de: "untersuchen", ru: "осматривать (о враче)", ex: "Der Arzt untersucht den Patienten gründlich." },
+    { topic: "Здоровье и спорт", de: "die Bewegung", ru: "движение, физическая активность", ex: "Frische Luft und Bewegung sind gesund." },
+    { topic: "Здоровье и спорт", de: "der Wettkampf (¨-e)", ru: "соревнование", ex: "Unsere Mannschaft hat den Wettkampf gewonnen." },
+    { topic: "Здоровье и спорт", de: "vermeiden (vermied, vermieden)", ru: "избегать", ex: "Man sollte Stress und Fastfood vermeiden." },
+    { topic: "Здоровье и спорт", de: "die Apotheke (-n)", ru: "аптека", ex: "Das Medikament kann man in der Apotheke kaufen." },
+
+    // 5. Природа и экология (первые 5 слов)
     { topic: "Природа и экология", de: "die Umwelt schützen", ru: "защищать окружающую среду", ex: "Jeder Mensch kann die Umwelt schützen." },
     { topic: "Природа и экология", de: "der Müll", ru: "мусор", ex: "In Deutschland trennt man den Müll." },
-    { topic: "Путешествия", de: "die Sehenswürdigkeit (-en)", ru: "достопримечательность", ex: "Berlin hat viele Sehenswürdigkeiten." }
-  ];
+    { topic: "Природа и экология", de: "die Luftverschmutzung", ru: "загрязнение воздуха", ex: "Viele Autos verursachen Luftverschmutzung." },
+    { topic: "Природа и экология", de: "Energie sparen", ru: "экономить энергию", ex: "Man muss Wasser und Energie sparen." },
+    { topic: "Природа и экология", de: "wiederverwerten", ru: "перерабатывать (вторсырьё)", ex: "Papier, Glas und Plastik kann man wiederverwerten." },
+          // 5. Природа и экология (оставшиеся 5 слов)
+    { topic: "Природа и экология", de: "aussterben (starb aus, ausgestorben)", ru: "вымирать", ex: "Viele seltene Tierarten können aussterben." },
+    { topic: "Природа и экология", de: "der Klimawandel", ru: "изменение климата", ex: "Der Klimawandel ist ein großes globales Problem." },
+    { topic: "Природа и экология", de: "der Naturschutz", ru: "охрана природы", ex: "Unsere Klasse beteiligt sich an Projekten zum Naturschutz." },
+    { topic: "Природа и экология", de: "sauber halten", ru: "содержать в чистоте", ex: "Wir müssen Wälder und Flüsse sauber halten." },
+    { topic: "Природа и экология", de: "die Plastiktüte (-n)", ru: "пластиковый пакет", ex: "Statt Plastiktüten nehme ich eine Stofftasche." },
+
+    // 6. Путешествия (10 слов)
+    { topic: "Путешествия", de: "die Sehenswürdigkeit (-en)", ru: "достопримечательность", ex: "Berlin hat viele Sehenswürdigkeiten." },
+    { topic: "Путешествия", de: "der Fahrschein (-e)", ru: "проездной билет", ex: "Vergiss nicht, einen Fahrschein zu kaufen!" },
+    { topic: "Путешествия", de: "die Jugendherberge (-n)", ru: "молодёжный хостел, турбаза", ex: "Schüler übernachten oft in einer Jugendherberge." },
+    { topic: "Путешествия", de: "umsteigen (stieg um, umgestiegen)", ru: "делать пересадку", ex: "In Frankfurt müssen wir in einen anderen Zug umsteigen." },
+    { topic: "Путешествия", de: "das Gepäck", ru: "багаж", ex: "Mein Gepäck ist diesmal nicht sehr schwer." },
+    { topic: "Путешествия", de: "der Reiseführer (-)", ru: "путеводитель; гид", ex: "Wir haben einen guten Reiseführer durch München gekauft." },
+    { topic: "Путешествия", de: "abfahren (fuhr ab, abgefahren)", ru: "отправляться (о транспорте)", ex: "Der Zug fährt pünktlich um 8 Uhr ab." },
+    { topic: "Путешествия", de: "buchen", ru: "бронировать", ex: "Wir haben das Hotel schon im Voraus gebucht." },
+    { topic: "Путешествия", de: "die Umgebung (-en)", ru: "окрестности", ex: "Die Umgebung der Stadt ist sehr malerisch." },
+    { topic: "Путешествия", de: "unvergesslich", ru: "незабываемый", ex: "Diese Reise war einfach unvergesslich." },
+
+    // 7. Профессии и будущее (10 слов)
+    { topic: "Профессии", de: "der Beruf (-e)", ru: "профессия", ex: "Welchen Beruf möchtest du wählen?" },
+    { topic: "Профессии", de: "die Ausbildung", ru: "профессиональное обучение", ex: "Nach der Schule macht er eine Ausbildung zum Mechaniker." },
+    { topic: "Профессии", de: "verdienen", ru: "зарабатывать", ex: "In diesem Beruf kann man gut verdienen." },
+    { topic: "Профессии", de: "die Kenntnisse (Pl.)", ru: "знания, навыки", ex: "Gute Fremdsprachenkenntnisse sind heute nötig." },
+    { topic: "Профессии", de: "die Berufswahl", ru: "выбор профессии", ex: "Die Berufswahl ist eine wichtige Entscheidung." },
+    { topic: "Профессии", de: "sich bewerben (um + Akk.)", ru: "подавать заявление (на работу/учёбу)", ex: "Er bewirbt sich um einen Studienplatz." },
+    { topic: "Профессии", de: "verantwortungsvoll", ru: "ответственный", ex: "Arzt ist ein sehr verantwortungsvoller Beruf." },
+    { topic: "Профессии", de: "der Arbeitgeber (-)", ru: "работодатель", ex: "Viele Arbeitgeber suchen junge Spezialisten." },
+    { topic: "Профессии", de: "die Fähigkeit (-en)", ru: "способность, умение", ex: "Für diesen Job braucht man kommunikative Fähigkeiten." },
+    { topic: "Профессии", de: "studieren", ru: "учиться в вузе", ex: "Nach dem Abitur möchte ich Informatik studieren." },
+
+    // 8. Погода и времена года (10 слов)
+    { topic: "Погода", de: "die Wettervorhersage (-n)", ru: "прогноз погоды", ex: "Laut Wettervorhersage wird es morgen regnen." },
+    { topic: "Погода", de: "bewölkt", ru: "облачно, пасмурно", ex: "Heute ist der Himmel stark bewölkt." },
+    { topic: "Погода", de: "das Gewitter (-)", ru: "гроза", ex: "Im Sommer gibt es oft starke Gewitter." },
+    { topic: "Погода", de: "scheinen (schien, geschienen)", ru: "светить (о солнце)", ex: "Die Sonne scheint und es ist warm." },
+    { topic: "Погода", de: "der Nebel", ru: "туман", ex: "Am Morgen gab es dichten Nebel." },
+    { topic: "Погода", de: "frieren (fror, gefroren)", ru: "мёрзнуть, подмерзать", ex: "Im Winter friert das Wasser im Fluss." },
+    { topic: "Погода", de: "der Niederschlag (¨-e)", ru: "осадки", ex: "Am Wochenende erwarten wir keine Niederschläge." },
+    { topic: "Погода", de: "schwül", ru: "душный", ex: "Vor dem Regen ist es oft sehr schwül." },
+    { topic: "Погода", de: "der Regenbogen (-)", ru: "радуга", ex: "Nach dem Sommerregen erschien ein schöner Regenbogen." },
+    { topic: "Погода", de: "wechseln", ru: "меняться (о погоде)", ex: "Im Frühling wechselt das Wetter sehr oft." },
+
+    // 9. Страны изучаемого языка (10 слов)
+    { topic: "Страны языка", de: "die Hauptstadt (¨-e)", ru: "столица", ex: "Berlin ist die Hauptstadt von Deutschland." },
+    { topic: "Страны языка", de: "das Bundesland (¨-er)", ru: "федеральная земля", ex: "Deutschland besteht aus 16 Bundesländern." },
+    { topic: "Страны языка", de: "die Einwohnerzahl (-en)", ru: "численность населения", ex: "Wien hat eine Einwohnerzahl von fast zwei Millionen." },
+    { topic: "Страны языка", de: "grenzen (an + Akk.)", ru: "граничить (с)", ex: "Deutschland grenzt an neun Länder." },
+    { topic: "Страны языка", de: "deutschsprachig", ru: "немецкоговорящий", ex: "Österreich und die Schweiz sind deutschsprachige Länder." },
+    { topic: "Страны языка", de: "die Flagge (-n)", ru: "флаг", ex: "Die deutsche Flagge ist schwarz-rot-gold." },
+    { topic: "Страны языка", de: "gelegen sein", ru: "быть расположенным", ex: "Deutschland ist im Zentrum Europas gelegen." },
+    { topic: "Страны языка", de: "das Wahrzeichen (-)", ru: "символ города/страны", ex: "Das Brandenburger Tor ist das Wahrzeichen Berlins." },
+    { topic: "Страны языка", de: "der Fluss (¨-e)", ru: "река", ex: "Der Rhein ist einer der längsten Flüsse Deutschlands." },
+    { topic: "Страны языка", de: "die Tradition (-en)", ru: "традиция", ex: "Jedes Bundesland hat seine eigenen Traditionen." }, 
+    ];
+
 
   const solvedSet = new Set();
   const totalTasks = grammarTasks.length + wordformTasks.length;

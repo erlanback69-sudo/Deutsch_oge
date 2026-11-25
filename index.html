@@ -504,6 +504,7 @@
   </section>
 </main>
 <script>
+  // База заданий по грамматике (задания 20-28 ОГЭ — 15 штук)
   const grammarTasks = [
     {
       id: "g1",
@@ -539,9 +540,80 @@
       text: "Gestern habe ich einen langen Brief ______.",
       answer: "geschrieben",
       rule: "Perfekt: вспомогательный глагол habe уже есть, нужен Partizip II — geschrieben."
+    },
+    {
+      id: "g6",
+      base: "BAUEN",
+      text: "Dieses moderne Museum ______ vor fünf Jahren gebaut.",
+      answer: "wurde",
+      rule: "Präteritum Passiv (музей был построен 5 лет назад): вспомогательный глагол werden в форме wurde."
+    },
+    {
+      id: "g7",
+      base: "NEU",
+      text: "Ich möchte mir ein ______ Fahrrad kaufen.",
+      answer: "neues",
+      rule: "Склонение прилагательного после неопределённого артикля ein в Akkusativ ср. рода (das Fahrrad): neues."
+    },
+    {
+      id: "g8",
+      base: "KÖNNEN",
+      text: "Als Kind ______ ich noch nicht gut schwimmen.",
+      answer: "konnte",
+      rule: "Präteritum от модального глагола können для 1-го лица ед. ч. (ich): konnte."
+    },
+    {
+      id: "g9",
+      base: "WIR",
+      text: "Unsere Großeltern besuchen ______ am Wochenende.",
+      answer: "uns",
+      rule: "Личное местоимение wir в винительном падеже (Akkusativ — навещают кого?): uns."
+    },
+    {
+      id: "g10",
+      base: "ALT",
+      text: "Mein Bruder ist drei Jahre ______ als ich.",
+      answer: "älter",
+      rule: "Сравнительная степень (Komparativ) односложного прилагательного alt получает умлаут: älter."
+    },
+    {
+      id: "g11",
+      base: "AUFSTEHEN",
+      text: "Am Sonntag bin ich erst um zehn Uhr ______.",
+      answer: "aufgestanden",
+      rule: "Partizip II от глагола с отделяемой приставкой aufstehen: приставка ge- встаёт между auf- и корнем."
+    },
+    {
+      id: "g12",
+      base: "STADT",
+      text: "In Deutschland gibt es viele schöne alte ______.",
+      answer: "Städte",
+      rule: "Множественное число от die Stadt: добавляется умлаут и окончание -e (Städte)."
+    },
+    {
+      id: "g13",
+      base: "DIESER",
+      text: "In ______ Jahr legen wir unsere Prüfungen ab.",
+      answer: "diesem",
+      rule: "Указательное местоимение dieser в Dativ ср. рода (das Jahr) после предлога in: diesem."
+    },
+    {
+      id: "g14",
+      base: "LESEN",
+      text: "Peter, ______ bitte diesen Text noch einmal!",
+      answer: "lies",
+      rule: "Повелительное наклонение (Imperativ) для du от сильного глагола lesen: корневая e меняется на ie (lies)."
+    },
+    {
+      id: "g15",
+      base: "SICH",
+      text: "Wir interessieren ______ sehr für deutsche Geschichte.",
+      answer: "uns",
+      rule: "Возвратная частица sich для местоимения wir меняется на uns."
     }
   ];
 
+  // База заданий по словообразованию (задания 29-34 ОГЭ — 15 штук)
   const wordformTasks = [
     {
       id: "w1",
@@ -577,6 +649,76 @@
       text: "Wir haben endlich eine gute ______ für dieses Problem gefunden.",
       answer: "Lösung",
       rule: "От глагола lösen образуем существительное с суффиксом -ung."
+    },
+    {
+      id: "w6",
+      base: "MÖGLICH",
+      text: "Im Sommer haben wir die ______, ans Meer zu fahren.",
+      answer: "Möglichkeit",
+      rule: "От прилагательного на -lich образуем существительное с помощью суффикса -keit."
+    },
+    {
+      id: "w7",
+      base: "SONNE",
+      text: "Heute ist das Wetter warm und ______.",
+      answer: "sonnig",
+      rule: "От существительного die Sonne образуем прилагательное с суффиксом -ig (одна n уходит)."
+    },
+    {
+      id: "w8",
+      base: "WISSEN",
+      text: "Mein Vater interessiert sich für moderne ______ und Technik.",
+      answer: "Wissenschaft",
+      rule: "От основы wissen образуем существительное «наука» с суффиксом -schaft."
+    },
+    {
+      id: "w9",
+      base: "BEKANNT",
+      text: "Dieser junge Sänger ist leider noch ganz ______.",
+      answer: "unbekannt",
+      rule: "По смыслу («к сожалению, ещё совсем неизвестен») нужна отрицательная приставка un-."
+    },
+    {
+      id: "w10",
+      base: "DEUTSCHLAND",
+      text: "In unserer Klasse lernen alle Schüler die ______ Sprache.",
+      answer: "deutsche",
+      rule: "От названия страны Deutschland образуем прилагательное deutsch с окончанием -e после артикля die."
+    },
+    {
+      id: "w11",
+      base: "ARBEIT",
+      text: "Nach der Schließung der Fabrik wurden viele Menschen ______.",
+      answer: "arbeitslos",
+      rule: "Прилагательное «безработный» образуется с помощью соединительной -s- и суффикса -los."
+    },
+    {
+      id: "w12",
+      base: "WANDERUNG",
+      text: "Am Wochenende machen wir oft lange ______ im Wald.",
+      answer: "Wanderungen",
+      rule: "Существительное женского рода на -ung во множественном числе получает окончание -en."
+    },
+    {
+      id: "w13",
+      base: "TYP",
+      text: "Das ist ein ______ deutsches Gericht.",
+      answer: "typisches",
+      rule: "От существительного Typ образуем прилагательное с суффиксом -isch и окончанием -es (ein ... Gericht)."
+    },
+    {
+      id: "w14",
+      base: "BESUCHEN",
+      text: "Am Wochenende kamen viele ______ ins Museum.",
+      answer: "Besucher",
+      rule: "От глагола besuchen образуем существительное «посетители» с суффиксом -er (во мн. ч. форма совпадает)."
+    },
+    {
+      id: "w15",
+      base: "GEFAHR",
+      text: "Bei Glatteis ist das Autofahren sehr ______.",
+      answer: "gefährlich",
+      rule: "От существительного die Gefahr образуем прилагательное «опасный» (с умлаутом и суффиксом -lich)."
     }
   ];
 

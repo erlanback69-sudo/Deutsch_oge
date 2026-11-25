@@ -320,6 +320,78 @@
       border-radius: 4px;
       font-weight: 600;
     }
+        .exam-text-box {
+      font-size: 1.05rem;
+      line-height: 2.1;
+      color: var(--text);
+    }
+
+    .inline-gap {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin: 0 3px;
+    }
+
+    .inline-input {
+      width: 130px !important;
+      min-width: 105px !important;
+      padding: 4px 8px !important;
+      font-size: 0.95rem !important;
+      border-bottom: 2px solid var(--primary) !important;
+      background: #f9fafb;
+    }
+
+    .inline-input.correct-inp {
+      background: #dcfce7;
+      border-color: var(--green) !important;
+      color: #166534;
+      font-weight: 700;
+    }
+
+    .inline-input.wrong-inp {
+      background: #fee2e2;
+      border-color: var(--red) !important;
+      color: #991b1b;
+    }
+
+    .inline-base {
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+
+    .exam-umlauts {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #fff;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .btn-exam-submit {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      }
+    
   </style>
 </head>
 <body>
@@ -338,6 +410,7 @@
   <button onclick="switchTab('wordform', this)">Словообразование (29–34)</button>
   <button onclick="switchTab('vocab', this)">Словарь по темам</button>
   <button onclick="switchTab('rules', this)">Правила ОГЭ</button>
+  <button onclick="switchTab('exam', this)">Вариант ОГЭ (тексты)</button>
 </nav>
 
 <main>
@@ -544,6 +617,19 @@
         </ul>
       </div>
     </details>
+  </section>
+    <!-- ВКЛАДКА 5: РЕАЛЬНЫЙ ВАРИАНТ ОГЭ -->
+  <section id="exam" class="tab-section">
+    <div class="exam-umlauts">
+      <span style="font-size: 0.85rem; color: var(--muted);">Вставить букву:</span>
+      <button type="button" class="umlaut-btn" onclick="insertToActive('ä')">ä</button>
+      <button type="button" class="umlaut-btn" onclick="insertToActive('ö')">ö</button>
+      <button type="button" class="umlaut-btn" onclick="insertToActive('ü')">ü</button>
+      <button type="button" class="umlaut-btn" onclick="insertToActive('ß')">ß</button>
+    </div>
+    <div id="examContainer"></div>
+    <button type="button" class="btn-exam-submit" onclick="checkFullExam()">✅ Проверить весь вариант</button>
+    <div id="examSummary" style="margin-top: 16px;"></div>
   </section>
 </main>
 <script>

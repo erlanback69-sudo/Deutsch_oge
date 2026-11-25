@@ -369,157 +369,182 @@
     </details>
   </section>
 </main>
-
 <script>
+  const grammarTasks = [
+    {
+      id: "g1",
+      base: "FAHREN",
+      text: "Im letzten Sommer ______ meine Familie ans Meer.",
+      answer: "fuhr",
+      rule: "Präteritum от сильного глагола fahren (3-е лицо ед. ч.) — fuhr."
+    },
+    {
+      id: "g2",
+      base: "GUT",
+      text: "Das Wetter heute ist viel ______ als gestern.",
+      answer: "besser",
+      rule: "Исключение в сравнительной степени (Komparativ): gut → besser."
+    },
+    {
+      id: "g3",
+      base: "KINDER",
+      text: "Die Lehrerin hilft den ______ bei den Hausaufgaben.",
+      answer: "Kindern",
+      rule: "Dativ множественного числа (кому? — детям) требует окончания -n: den Kindern."
+    },
+    {
+      id: "g4",
+      base: "ZWEI",
+      text: "Meine Wohnung liegt im ______ Stock.",
+      answer: "zweiten",
+      rule: "Порядковое числительное в Dativ после im (in dem): zweiten."
+    },
+    {
+      id: "g5",
+      base: "SCHREIBEN",
+      text: "Gestern habe ich einen langen Brief ______.",
+      answer: "geschrieben",
+      rule: "Perfekt: вспомогательный глагол habe уже есть, нужен Partizip II — geschrieben."
+    }
+  ];
 
-• 
-Прилагательные: -lich (freundlich), -ig (wichtig), -isch (typisch), -los (arbeitslos), -bar (lesbar).
-• 
-Существительные: -ung (die Lösung), -heit / -keit (die Gesundheit), -er для профессий/деятелей (der Lehrer).
-• 
-Отрицание: приставка un- (glücklich → unglücklich).
-// База заданий по грамматике (задания 20-28 ОГЭ)
-const grammarTasks = [
-{
-id: "g1",
-base: "FAHREN",
-text: "Im letzten Sommer ______ meine Familie ans Meer.",
-answer: "fuhr",
-rule: "Präteritum от сильного глагола fahren (3-е лицо ед. ч.) — fuhr."
-},
-{
-id: "g2",
-base: "GUT",
-text: "Das Wetter heute ist viel ______ als gestern.",
-answer: "besser",
-rule: "Исключение в сравнительной степени (Komparativ): gut → besser."
-},
-{
-id: "g3",
-base: "KINDER",
-text: "Die Lehrerin hilft den ______ bei den Hausaufgaben.",
-answer: "Kindern",
-rule: "Dativ множественного числа (кому? — детям) требует окончания -n: den Kindern."
-},
-{
-id: "g4",
-base: "ZWEI",
-text: "Meine Wohnung liegt im ______ Stock.",
-answer: "zweiten",
-rule: "Порядковое числительное в Dativ после im (in dem): zweiten."
-},
-{
-id: "g5",
-base: "SCHREIBEN",
-text: "Gestern habe ich einen langen Brief ______.",
-answer: "geschrieben",
-rule: "Perfekt: вспомогательный глагол habe уже есть, нужен Partizip II — geschrieben."
-}
-];
-// База заданий по словообразованию (задания 29-34 ОГЭ)
-const wordformTasks = [
-{
-id: "w1",
-base: "FREUND",
-text: "Unsere neue Nachbarin ist sehr nett und ______.",
-answer: "freundlich",
-rule: "От существительного Freund образуем прилагательное с помощью суффикса -lich."
-},
-{
-id: "w2",
-base: "GESUND",
-text: "Sport und frische Luft sind sehr wichtig für die ______.",
-answer: "Gesundheit",
-rule: "Существительное женского рода образуется с помощью суффикса -heit."
-},
-{
-id: "w3",
-base: "GLÜCKLICH",
-text: "Er hat die Prüfung nicht bestanden und war sehr ______.",
-answer: "unglücklich",
-rule: "По смыслу (не сдал экзамен) требуется отрицательная приставка un-."
-},
-{
-id: "w4",
-base: "LEHREN",
-text: "Mein Onkel arbeitet als ______ in einer Schule.",
-answer: "Lehrer",
-rule: "Обозначение профессии от глагола lehren с помощью суффикса -er."
-},
-{
-id: "w5",
-base: "LÖSEN",
-text: "Wir haben endlich eine gute ______ für dieses Problem gefunden.",
-answer: "Lösung",
-rule: "От глагола lösen образуем существительное с суффиксом -ung."
-}
-];
-// Словарь по темам кодификатора ОГЭ
-const vocabulary = [
-{ topic: "Школа", de: "das Schulfach (die Schulfächer)", ru: "школьный предмет", ex: "Mein Lieblingsschulfach ist Deutsch." },
-{ topic: "Школа", de: "die Prüfung (-en)", ru: "экзамен", ex: "Wir bereiten uns auf die Prüfung vor." },
-{ topic: "Школа", de: "das Zeugnis (-se)", ru: "аттестат, табель с оценками", ex: "Er hat gute Noten im Zeugnis." },
-{ topic: "Семья и друзья", de: "sich verstehen (mit + Dat.)", ru: "ладить (с кем-либо)", ex: "Ich verstehe mich gut mit meinen Eltern." },
-{ topic: "Семья и друзья", de: "zuverlässig", ru: "надёжный", ex: "Ein echter Freund muss zuverlässig sein." },
-{ topic: "Здоровье и спорт", de: "sich erkälten", ru: "простудиться", ex: "Zieh dich warm an, sonst erkältest du dich!" },
-{ topic: "Здоровье и спорт", de: "die Ernährung", ru: "питание", ex: "Gesunde Ernährung ist wichtig für den Körper." },
-{ topic: "Природа и экология", de: "die Umwelt schützen", ru: "защищать окружающую среду", ex: "Jeder Mensch kann die Umwelt schützen." },
-{ topic: "Природа и экология", de: "der Müll", ru: "мусор", ex: "In Deutschland trennt man den Müll." },
-{ topic: "Путешествия", de: "die Sehenswürdigkeit (-en)", ru: "достопримечательность", ex: "Berlin hat viele Sehenswürdigkeiten." }
-];
-const solvedSet = new Set();
-const totalTasks = grammarTasks.length + wordformTasks.length;
-document.getElementById("totalCount").textContent = totalTasks;
-function updateScore() {
-document.getElementById("scoreCount").textContent = solvedSet.size;
-}
-function switchTab(tabId, btn) {
-document.querySelectorAll(".tab-section").forEach(s => s.classList.remove("active"));
-document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
-document.getElementById(tabId).classList.add("active");
-btn.classList.add("active");
-}
-function insertUmlaut(inputId, char) {
-const input = document.getElementById(inputId);
-input.value += char;
-input.focus();
-}
-function renderTasks(tasks, containerId, label) {
-const container = document.getElementById(containerId);
-container.innerHTML = "";
-tasks.forEach((task, index) => {
-const inputId = inp_${task.id};
-const fbId = fb_${task.id};
-const card = document.createElement("div");
-card.className = "card";
-card.innerHTML = <div class="task-header"> <span>${label} №${index + 1}</span> <span class="base-word">${task.base}</span> </div> <div class="sentence">${task.text}</div> <div class="umlaut-bar"> ${["ä", "ö", "ü", "ß"].map(ch =>${ch}).join("")} </div> <div class="input-row"> <input type="text" id="${inputId}" placeholder="Введите слово..." autocomplete="off"> <button type="button" class="btn-check" onclick="checkAnswer('${task.id}', '${task.answer}', '${task.rule.replace(/'/g, "\\'")}')">Проверить</button> </div> <div class="feedback" id="${fbId}"></div> ;
-container.appendChild(card);
-});
-}
-function checkAnswer(id, correct, rule) {
-const input = document.getElementById(inp_${id});
-const fb = document.getElementById(fb_${id});
-const userVal = input.value.trim();
-if (!userVal) return;
-if (userVal.toLowerCase() === correct.toLowerCase()) {
-fb.className = "feedback ok";
-fb.innerHTML = ✅ <b>Верно!</b> (${correct}) — ${rule};
-solvedSet.add(id);
-updateScore();
-} else {
-fb.className = "feedback err";
-fb.innerHTML = ❌ <b>Неверно.</b> Правильный ответ: <b>${correct}</b>. ${rule};
-}
-}
-function renderVocab(selectedTopic = "Все") {
-const topics = ["Все", ...new Set(vocabulary.map(v => v.topic))];
-const filterBox = document.getElementById("topicFilters");
-filterBox.innerHTML = topics.map(t => <button class="topic-btn ${t === selectedTopic ? "active" : ""}" onclick="renderVocab('${t}')">${t}</button>).join("");
-const grid = document.getElementById("vocabGrid");
-const filtered = selectedTopic === "Все" ? vocabulary : vocabulary.filter(v => v.topic === selectedTopic);
-grid.innerHTML = filtered.map(item => <div class="word-card"> <div class="word-de">${item.de}</div> <div class="word-ru">${item.ru}</div> <div class="word-ex">${item.ex}</div> </div>).join("");
-}
-// Инициализация (один вызов без дублей)
-renderTasks(grammarTasks, "grammarList", "Задание");
-renderTasks(wordformTasks, "wordformList", "Задание");
-renderVocab();
+  const wordformTasks = [
+    {
+      id: "w1",
+      base: "FREUND",
+      text: "Unsere neue Nachbarin ist sehr nett und ______.",
+      answer: "freundlich",
+      rule: "От существительного Freund образуем прилагательное с помощью суффикса -lich."
+    },
+    {
+      id: "w2",
+      base: "GESUND",
+      text: "Sport und frische Luft sind sehr wichtig für die ______.",
+      answer: "Gesundheit",
+      rule: "Существительное женского рода образуется с помощью суффикса -heit."
+    },
+    {
+      id: "w3",
+      base: "GLÜCKLICH",
+      text: "Er hat die Prüfung nicht bestanden und war sehr ______.",
+      answer: "unglücklich",
+      rule: "По смыслу (не сдал экзамен) требуется отрицательная приставка un-."
+    },
+    {
+      id: "w4",
+      base: "LEHREN",
+      text: "Mein Onkel arbeitet als ______ in einer Schule.",
+      answer: "Lehrer",
+      rule: "Обозначение профессии от глагола lehren с помощью суффикса -er."
+    },
+    {
+      id: "w5",
+      base: "LÖSEN",
+      text: "Wir haben endlich eine gute ______ für dieses Problem gefunden.",
+      answer: "Lösung",
+      rule: "От глагола lösen образуем существительное с суффиксом -ung."
+    }
+  ];
+
+  const vocabulary = [
+    { topic: "Школа", de: "das Schulfach (die Schulfächer)", ru: "школьный предмет", ex: "Mein Lieblingsschulfach ist Deutsch." },
+    { topic: "Школа", de: "die Prüfung (-en)", ru: "экзамен", ex: "Wir bereiten uns auf die Prüfung vor." },
+    { topic: "Школа", de: "das Zeugnis (-se)", ru: "аттестат, табель с оценками", ex: "Er hat gute Noten im Zeugnis." },
+    { topic: "Семья и друзья", de: "sich verstehen (mit + Dat.)", ru: "ладить (с кем-либо)", ex: "Ich verstehe mich gut mit meinen Eltern." },
+    { topic: "Семья и друзья", de: "zuverlässig", ru: "надёжный", ex: "Ein echter Freund muss zuverlässig sein." },
+    { topic: "Здоровье и спорт", de: "sich erkälten", ru: "простудиться", ex: "Zieh dich warm an, sonst erkältest du dich!" },
+    { topic: "Здоровье и спорт", de: "die Ernährung", ru: "питание", ex: "Gesunde Ernährung ist wichtig für den Körper." },
+    { topic: "Природа и экология", de: "die Umwelt schützen", ru: "защищать окружающую среду", ex: "Jeder Mensch kann die Umwelt schützen." },
+    { topic: "Природа и экология", de: "der Müll", ru: "мусор", ex: "In Deutschland trennt man den Müll." },
+    { topic: "Путешествия", de: "die Sehenswürdigkeit (-en)", ru: "достопримечательность", ex: "Berlin hat viele Sehenswürdigkeiten." }
+  ];
+
+  const solvedSet = new Set();
+  const totalTasks = grammarTasks.length + wordformTasks.length;
+  document.getElementById("totalCount").textContent = totalTasks;
+
+  function updateScore() {
+    document.getElementById("scoreCount").textContent = solvedSet.size;
+  }
+
+  function switchTab(tabId, btn) {
+    document.querySelectorAll(".tab-section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+    document.getElementById(tabId).classList.add("active");
+    btn.classList.add("active");
+  }
+
+  function insertUmlaut(inputId, char) {
+    const input = document.getElementById(inputId);
+    input.value += char;
+    input.focus();
+  }
+
+  function renderTasks(tasks, containerId, label) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    tasks.forEach((task, index) => {
+      const inputId = `inp_${task.id}`;
+      const fbId = `fb_${task.id}`;
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="task-header">
+          <span>${label} №${index + 1}</span>
+          <span class="base-word">${task.base}</span>
+        </div>
+        <div class="sentence">${task.text}</div>
+        <div class="umlaut-bar">
+          ${["ä", "ö", "ü", "ß"].map(ch => `<button type="button" class="umlaut-btn" onclick="insertUmlaut('${inputId}', '${ch}')">${ch}</button>`).join("")}
+        </div>
+        <div class="input-row">
+          <input type="text" id="${inputId}" placeholder="Введите слово..." autocomplete="off">
+          <button type="button" class="btn-check" onclick="checkAnswer('${task.id}', '${task.answer}', '${task.rule.replace(/'/g, "\\'")}')">Проверить</button>
+        </div>
+        <div class="feedback" id="${fbId}"></div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function checkAnswer(id, correct, rule) {
+    const input = document.getElementById(`inp_${id}`);
+    const fb = document.getElementById(`fb_${id}`);
+    const userVal = input.value.trim();
+    if (!userVal) return;
+
+    if (userVal.toLowerCase() === correct.toLowerCase()) {
+      fb.className = "feedback ok";
+      fb.innerHTML = `✅ <b>Верно!</b> (${correct}) — ${rule}`;
+      solvedSet.add(id);
+      updateScore();
+    } else {
+      fb.className = "feedback err";
+      fb.innerHTML = `❌ <b>Неверно.</b> Правильный ответ: <b>${correct}</b>. ${rule}`;
+    }
+  }
+
+  function renderVocab(selectedTopic = "Все") {
+    const topics = ["Все", ...new Set(vocabulary.map(v => v.topic))];
+    const filterBox = document.getElementById("topicFilters");
+    filterBox.innerHTML = topics.map(t => `
+      <button class="topic-btn ${t === selectedTopic ? "active" : ""}" onclick="renderVocab('${t}')">${t}</button>
+    `).join("");
+
+    const grid = document.getElementById("vocabGrid");
+    const filtered = selectedTopic === "Все" ? vocabulary : vocabulary.filter(v => v.topic === selectedTopic);
+    grid.innerHTML = filtered.map(item => `
+      <div class="word-card">
+        <div class="word-de">${item.de}</div>
+        <div class="word-ru">${item.ru}</div>
+        <div class="word-ex">${item.ex}</div>
+      </div>
+    `).join("");
+  }
+
+  renderTasks(grammarTasks, "grammarList", "Задание");
+  renderTasks(wordformTasks, "wordformList", "Задание");
+  renderVocab();
+</script>
+</body>
+</html>

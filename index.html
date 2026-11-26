@@ -461,6 +461,20 @@
       background: #334155;
       color: #e2e8f0;
     }
+        .word-ru.hidden-tr {
+      position: relative;
+      color: transparent !important;
+      user-select: none;
+    }
+    .word-ru.hidden-tr::after {
+      content: "👁 Показать перевод";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>

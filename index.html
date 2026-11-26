@@ -3441,6 +3441,7 @@
           totalGaps++;
           const inp = document.getElementById(`ex_${seg.num}`);
           const val = inp.value.trim();
+          const safeVal = val.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
           inp.classList.remove("correct-inp", "wrong-inp");
 
           if (val.toLowerCase() === seg.ans.toLowerCase()) {
@@ -3448,7 +3449,7 @@
             inp.classList.add("correct-inp");
           } else {
             inp.classList.add("wrong-inp");
-            mistakesHtml += `<li><b>Задание ${seg.num} (${seg.base}):</b> ваш ответ «${val || "пусто"}» → правильно <b>${seg.ans}</b> (${seg.rule})</li>`;
+           mistakesHtml += `<li><b>Задание ${seg.num} (${seg.base}):</b> ваш ответ «${safeVal || "пусто"}» → правильно <b>${seg.ans}</b> (${seg.rule})</li>`;
           }
         }
       });

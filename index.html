@@ -461,19 +461,44 @@
       background: #334155;
       color: #e2e8f0;
     }
-        .word-ru.hidden-tr {
-      position: relative;
-      color: transparent !important;
+    .flashcard-box {
+      max-width: 420px;
+      margin: 16px auto;
+      text-align: center;
+      touch-action: pan-y;
+    }
+    .flashcard {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      padding: 28px 20px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      transition: transform 0.25s ease, border-color 0.2s ease;
+      cursor: pointer;
       user-select: none;
     }
-    .word-ru.hidden-tr::after {
-      content: "👁 Показать перевод";
-      position: absolute;
-      inset: 0;
+    body.dark-theme .flashcard {
+      background: #1e293b;
+      border-color: var(--border);
+    }
+    .swipe-actions {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .swipe-actions button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -497,6 +522,7 @@
   <button onclick="switchTab('vocab', this)">Словарь по темам</button>
   <button onclick="switchTab('rules', this)">Правила ОГЭ</button>
   <button onclick="switchTab('exam', this)">Вариант ОГЭ (тексты)</button>
+  <button onclick="switchTab('cards', this)">🃏 Карточки (свайпы)</button>
 </nav>
 
 <main>
@@ -729,6 +755,47 @@
     <div style="display: flex; justify-content: space-between; gap: 8px; margin-top: 16px;">
       <button type="button" class="topic-btn" style="flex: 1; padding: 10px;" onclick="changeExamSheet(-1)">⬅️ Предыдущий лист</button>
       <button type="button" class="topic-btn" style="flex: 1; padding: 10px;" onclick="changeExamSheet(1)">Следующий лист ➡️</button>
+    </div>
+  </section>
+    <!-- ВКЛАДКА 6: КАРТОЧКИ СО СВАЙПАМИ -->
+  <section id="cards" class="tab-section">
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 12px;">
+      <button type="button" class="topic-btn active" id="fcTabAll" onclick="setFcFolder('all')">📚 Все слова</button>
+      <button type="button" class="topic-btn" id="fcTabUnlearned" onclick="setFcFolder('unlearned')">❌ Не выучено (<span id="fcUnlearnedCount">0</span>)</button>
+      <button type="button" class="topic-btn" id="fcTabLearned" onclick="setFcFolder('learned')">✅ Выучено (<span id="fcLearnedCount">0</span>)</button>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 12px;">
+      <select id="fcTopicSelect" onchange="buildFcQueue()" style="padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 0.92rem; max-width: 100%;">
+        <option value="Все">Тема: Все темы (1170 слов)</option>
+        <option value="Школа">Тема: Школа</option>
+        <option value="Семья и друзья">Тема: Семья и друзья</option>
+        <option value="Свободное время">Тема: Свободное время</option>
+        <option value="Здоровье и спорт">Тема: Здоровье и спорт</option>
+        <option value="Природа и экология">Тема: Природа и экология</option>
+        <option value="Путешествия">Тема: Путешествия</option>
+        <option value="Профессии">Тема: Профессии</option>
+        <option value="Погода">Тема: Погода</option>
+        <option value="Страны языка">Тема: Страны языка</option>
+      </select>
+    </div>
+
+    <div id="fcCounterText" style="text-align: center; font-size: 0.85rem; color: var(--muted); margin-bottom: 8px;"></div>
+
+    <div class="flashcard-box" id="fcSwipeArea">
+      <div class="flashcard" id="flashcard" onclick="flipFlashcard()">
+        <div id="fcFront" style="font-size: 1.35rem; font-weight: 700; color: var(--primary);"></div>
+        <div id="fcHint" style="font-size: 0.8rem; color: var(--muted); margin-top: 10px;">👆 Нажми на карточку, чтобы увидеть перевод</div>
+        <div id="fcBack" style="display: none; margin-top: 14px; border-top: 1px dashed var(--border); padding-top: 12px; width: 100%;">
+          <div id="fcRu" style="font-size: 1.15rem; font-weight: 600;"></div>
+          <div id="fcEx" style="font-size: 0.9rem; font-style: italic; color: var(--muted); margin-top: 8px;"></div>
+        </div>
+      </div>
+
+      <div class="swipe-actions">
+        <button type="button" onclick="swipeCard('left')" style="background: #fee2e2; color: #b91c1c;">⬅️ Не знаю</button>
+        <button type="button" onclick="swipeCard('right')" style="background: #dcfce7; color: #15803d;">Знаю ➡️</button>
+      </div>
     </div>
   </section>
 </main>
@@ -2839,6 +2906,126 @@
     const btn = document.getElementById("themeToggle");
     if (btn) btn.textContent = "☀️ Светлая тема";
   }
+  
+  let fcLearned = JSON.parse(localStorage.getItem("deutsch_oge_learned") || "[]");
+  let fcUnlearned = JSON.parse(localStorage.getItem("deutsch_oge_unlearned") || "[]");
+  let fcFolder = "all";
+  let fcQueue = [];
+  let fcIndex = 0;
+
+  function updateFcCounts() {
+    const uEl = document.getElementById("fcUnlearnedCount");
+    const lEl = document.getElementById("fcLearnedCount");
+    if (uEl) uEl.textContent = fcUnlearned.length;
+    if (lEl) lEl.textContent = fcLearned.length;
+  }
+
+  function setFcFolder(folder) {
+    fcFolder = folder;
+    document.getElementById("fcTabAll").classList.toggle("active", folder === "all");
+    document.getElementById("fcTabUnlearned").classList.toggle("active", folder === "unlearned");
+    document.getElementById("fcTabLearned").classList.toggle("active", folder === "learned");
+    buildFcQueue();
+  }
+
+  function buildFcQueue() {
+    const topic = document.getElementById("fcTopicSelect").value;
+    let list = vocabulary.filter(w => w.de && (topic === "Все" || w.topic === topic));
+
+    if (fcFolder === "learned") {
+      list = list.filter(w => fcLearned.includes(w.de));
+    } else if (fcFolder === "unlearned") {
+      list = list.filter(w => fcUnlearned.includes(w.de));
+    }
+
+    fcQueue = list;
+    fcIndex = 0;
+    updateFcCounts();
+    renderFlashcard();
+  }
+
+  function renderFlashcard() {
+    const front = document.getElementById("fcFront");
+    const back = document.getElementById("fcBack");
+    const hint = document.getElementById("fcHint");
+    const counter = document.getElementById("fcCounterText");
+    const card = document.getElementById("flashcard");
+
+    card.style.transform = "translateX(0) rotate(0deg)";
+    card.style.borderColor = "var(--border)";
+    back.style.display = "none";
+
+    if (fcQueue.length === 0) {
+      front.textContent = "В этой папке пока пусто 🎉";
+      hint.textContent = "Выбери другую папку или тему сверху";
+      counter.textContent = "0 из 0";
+      return;
+    }
+
+    if (fcIndex >= fcQueue.length) fcIndex = 0;
+    const item = fcQueue[fcIndex];
+    front.textContent = item.de;
+    hint.style.display = "block";
+    hint.textContent = "👆 Нажми на карточку, чтобы увидеть перевод";
+    document.getElementById("fcRu").textContent = item.ru;
+    document.getElementById("fcEx").textContent = item.ex;
+    counter.textContent = `Карточка ${fcIndex + 1} из ${fcQueue.length} (${item.topic})`;
+  }
+
+  function flipFlashcard() {
+    if (fcQueue.length === 0) return;
+    const back = document.getElementById("fcBack");
+    const hint = document.getElementById("fcHint");
+    const isHidden = back.style.display === "none";
+    back.style.display = isHidden ? "block" : "none";
+    hint.style.display = isHidden ? "none" : "block";
+  }
+
+  function swipeCard(dir) {
+    if (fcQueue.length === 0) return;
+    const item = fcQueue[fcIndex];
+    const card = document.getElementById("flashcard");
+
+    if (dir === "right") {
+      card.style.transform = "translateX(120px) rotate(8deg)";
+      card.style.borderColor = "var(--green)";
+      if (!fcLearned.includes(item.de)) fcLearned.push(item.de);
+      fcUnlearned = fcUnlearned.filter(x => x !== item.de);
+    } else {
+      card.style.transform = "translateX(-120px) rotate(-8deg)";
+      card.style.borderColor = "#ef4444";
+      if (!fcUnlearned.includes(item.de)) fcUnlearned.push(item.de);
+      fcLearned = fcLearned.filter(x => x !== item.de);
+    }
+
+    localStorage.setItem("deutsch_oge_learned", JSON.stringify(fcLearned));
+    localStorage.setItem("deutsch_oge_unlearned", JSON.stringify(fcUnlearned));
+    updateFcCounts();
+
+    setTimeout(() => {
+      if (fcFolder !== "all") {
+        fcQueue.splice(fcIndex, 1);
+      } else {
+        fcIndex++;
+      }
+      renderFlashcard();
+    }, 220);
+  }
+
+  let touchStartX = 0;
+  const swipeArea = document.getElementById("fcSwipeArea");
+  if (swipeArea) {
+    swipeArea.addEventListener("touchstart", e => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    swipeArea.addEventListener("touchend", e => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (diff > 55) swipeCard("right");
+      else if (diff < -55) swipeCard("left");
+    }, { passive: true });
+  }
+
+  buildFcQueue();
 </script>
 </body>
 </html>

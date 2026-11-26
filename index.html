@@ -618,8 +618,16 @@
       </div>
     </details>
   </section>
-    <!-- ВКЛАДКА 5: РЕАЛЬНЫЙ ВАРИАНТ ОГЭ -->
+  <!-- ВКЛАДКА 5: РЕАЛЬНЫЙ ВАРИАНТ ОГЭ (10 ЛИСТОВ) -->
   <section id="exam" class="tab-section">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+      <button type="button" class="topic-btn" onclick="changeExamSheet(-1)">⬅️ Предыдущий лист</button>
+      <b id="examSheetTitle" style="font-size: 1rem; color: var(--primary);">Лист 1 из 10</b>
+      <button type="button" class="topic-btn" onclick="changeExamSheet(1)">Следующий лист ➡️</button>
+    </div>
+
+    <div class="topic-filters" id="examSheetButtons"></div>
+
     <div class="exam-umlauts">
       <span style="font-size: 0.85rem; color: var(--muted);">Вставить букву:</span>
       <button type="button" class="umlaut-btn" onclick="insertToActive('ä')">ä</button>
@@ -627,9 +635,15 @@
       <button type="button" class="umlaut-btn" onclick="insertToActive('ü')">ü</button>
       <button type="button" class="umlaut-btn" onclick="insertToActive('ß')">ß</button>
     </div>
+
     <div id="examContainer"></div>
-    <button type="button" class="btn-exam-submit" onclick="checkFullExam()">✅ Проверить весь вариант</button>
+    <button type="button" class="btn-exam-submit" onclick="checkFullExam()">✅ Проверить текущий лист</button>
     <div id="examSummary" style="margin-top: 16px;"></div>
+
+    <div style="display: flex; justify-content: space-between; gap: 8px; margin-top: 16px;">
+      <button type="button" class="topic-btn" style="flex: 1; padding: 10px;" onclick="changeExamSheet(-1)">⬅️ Предыдущий лист</button>
+      <button type="button" class="topic-btn" style="flex: 1; padding: 10px;" onclick="changeExamSheet(1)">Следующий лист ➡️</button>
+    </div>
   </section>
 </main>
 <script>
@@ -1061,51 +1075,494 @@
     `).join("");
   }
 
-    const examTexts = [
+  const examSheets = [
+    // ЛИСТ 1
     {
-      title: "Часть 1. Грамматика (20–28): Ein Ausflug nach Dresden",
-      segments: [
-        "Im letzten Monat ",
-        { num: 20, base: "MACHEN", ans: "machte", rule: "Präteritum от machen (3-е лицо ед. ч.) — machte." },
-        " unsere Klasse einen tollen Ausflug nach Dresden. Wir ",
-        { num: 21, base: "FAHREN", ans: "fuhren", rule: "Präteritum от сильного глагола fahren для wir — fuhren." },
-        " früh am Morgen mit dem Zug los. Die Reise dauerte nur zwei Stunden. In Dresden ",
-        { num: 22, base: "WIR", ans: "uns", rule: "Местоимение wir в Akkusativ (встретил кого?) — uns." },
-        " ein netter Reiseführer am Bahnhof abholte. Zuerst besuchten wir die Zwinger-Galerie, die eines der ",
-        { num: 23, base: "BERÜHMT", ans: "berühmtesten", rule: "Superlativ прилагательного в Genitiv мн. числа — berühmtesten." },
-        " Museen Deutschlands ist. Dort sahen ",
-        { num: 24, base: "VIEL", ans: "viele", rule: "Множественное число без артикля (многие туристы) — viele." },
-        " Touristen aus der ganzen Welt. Nach dem Mittagessen gingen wir an der Elbe entlang. Das Wetter war viel ",
-        { num: 25, base: "WARM", ans: "wärmer", rule: "Komparativ от warm получает умлаут — wärmer." },
-        " als am Tag zuvor. Am Abend kauften alle Schüler Souvenirs für ",
-        { num: 26, base: "SIE", ans: "ihre", rule: "Притяжательное местоимение для «они» (их родителей, Akk. Pl.) — ihre." },
-        " Eltern. Dieser Tag ",
-        { num: 27, base: "WERDEN", ans: "wird", rule: "Futur I (3-е лицо ед. ч. — этот день останется) — wird." },
-        " uns noch lange in Erinnerung bleiben, weil wir so viele ",
-        { num: 28, base: "FOTO", ans: "Fotos", rule: "Множественное число от das Foto — die Fotos." },
-        " gemacht haben."
+      name: "Лист 1",
+      texts: [
+        {
+          title: "Часть 1. Грамматика (20–28): Ein Ausflug nach Dresden",
+          segments: [
+            "Im letzten Monat ",
+            { num: 20, base: "MACHEN", ans: "machte", rule: "Präteritum от machen (3-е лицо ед. ч.) — machte." },
+            " unsere Klasse einen tollen Ausflug nach Dresden. Wir ",
+            { num: 21, base: "FAHREN", ans: "fuhren", rule: "Präteritum от сильного глагола fahren для wir — fuhren." },
+            " früh am Morgen mit dem Zug los. Die Reise dauerte nur zwei Stunden. In Dresden ",
+            { num: 22, base: "WIR", ans: "uns", rule: "Местоимение wir в Akkusativ (встретил кого?) — uns." },
+            " ein netter Reiseführer am Bahnhof abholte. Zuerst besuchten wir die Zwinger-Galerie, die eines der ",
+            { num: 23, base: "BERÜHMT", ans: "berühmtesten", rule: "Superlativ прилагательного в Genitiv мн. числа — berühmtesten." },
+            " Museen Deutschlands ist. Dort sahen ",
+            { num: 24, base: "VIEL", ans: "viele", rule: "Множественное число без артикля (многие туристы) — viele." },
+            " Touristen aus der ganzen Welt. Nach dem Mittagessen gingen wir an der Elbe entlang. Das Wetter war viel ",
+            { num: 25, base: "WARM", ans: "wärmer", rule: "Komparativ от warm получает умлаут — wärmer." },
+            " als am Tag zuvor. Am Abend kauften alle Schüler Souvenirs für ",
+            { num: 26, base: "SIE", ans: "ihre", rule: "Притяжательное местоимение для «они» (их родителей, Akk. Pl.) — ihre." },
+            " Eltern. Dieser Tag ",
+            { num: 27, base: "WERDEN", ans: "wird", rule: "Futur I (3-е лицо ед. ч. — этот день останется) — wird." },
+            " uns noch lange in Erinnerung bleiben, weil wir so viele ",
+            { num: 28, base: "FOTO", ans: "Fotos", rule: "Множественное число от das Foto — die Fotos." },
+            " gemacht haben."
+          ]
+        },
+        {
+          title: "Часть 2. Словообразование (29–34): Mein Traumjob",
+          segments: [
+            "Viele Jugendliche denken schon in der Schule über ihre ",
+            { num: 29, base: "BERUF", ans: "berufliche", rule: "Прилагательное «профессиональное (будущее)» от Beruf — berufliche." },
+            " Zukunft nach. Ich möchte gern Journalist werden, weil dieser Beruf sehr ",
+            { num: 30, base: "INTERESSE", ans: "interessant", rule: "Прилагательное «интересный» от Interesse — interessant." },
+            " ist. Ein guter Journalist muss neugierig, aktiv und ",
+            { num: 31, base: "FREUND", ans: "freundlich", rule: "Прилагательное «дружелюбный» с суффиксом -lich — freundlich." },
+            " sein. Außerdem braucht man für diese Arbeit eine gute ",
+            { num: 32, base: "AUSBILDEN", ans: "Ausbildung", rule: "Существительное «образование/обучение» с суффиксом -ung — Ausbildung." },
+            ". Natürlich gibt es in jedem Job auch ",
+            { num: 33, base: "SCHWIERIG", ans: "Schwierigkeiten", rule: "Существительное во мн. ч. «трудности» (-keit + -en) — Schwierigkeiten." },
+            ", aber ich bin sicher, dass ich die richtige ",
+            { num: 34, base: "ENTSCHEIDEN", ans: "Entscheidung", rule: "Существительное «решение» от entscheiden с суффиксом -ung — Entscheidung." },
+            " getroffen habe."
+          ]
+        }
       ]
     },
+    // ЛИСТ 2
     {
-      title: "Часть 2. Словообразование (29–34): Mein Traumjob",
-      segments: [
-        "Viele Jugendliche denken schon in der Schule über ihre ",
-        { num: 29, base: "BERUF", ans: "berufliche", rule: "Прилагательное «профессиональное (будущее)» от Beruf — berufliche." },
-        " Zukunft nach. Ich möchte gern Journalist werden, weil dieser Beruf sehr ",
-        { num: 30, base: "INTERESSE", ans: "interessant", rule: "Прилагательное «интересный» от Interesse — interessant." },
-        " ist. Ein guter Journalist muss neugierig, aktiv und ",
-        { num: 31, base: "FREUND", ans: "freundlich", rule: "Прилагательное «дружелюбный» с суффиксом -lich — freundlich." },
-        " sein. Außerdem braucht man für diese Arbeit eine gute ",
-        { num: 32, base: "AUSBILDEN", ans: "Ausbildung", rule: "Существительное «образование/обучение» с суффиксом -ung — Ausbildung." },
-        ". Natürlich gibt es in jedem Job auch ",
-        { num: 33, base: "SCHWIERIG", ans: "Schwierigkeiten", rule: "Существительное во мн. ч. «трудности» (-keit + -en) — Schwierigkeiten." },
-        ", aber ich bin sicher, dass ich die richtige ",
-        { num: 34, base: "ENTSCHEIDEN", ans: "Entscheidung", rule: "Существительное «решение» от entscheiden с суффиксом -ung — Entscheidung." },
-        " getroffen habe."
+      name: "Лист 2",
+      texts: [
+        {
+          title: "Часть 1. Грамматика (20–28): Ein Wochenende auf dem Land",
+          segments: [
+            "Am vergangenen Wochenende ",
+            { num: 20, base: "BESUCHEN", ans: "besuchte", rule: "Präteritum от слабого глагола besuchen — besuchte." },
+            " ich meine Großeltern im Dorf. Sie ",
+            { num: 21, base: "WOHNEN", ans: "wohnen", rule: "Präsens для 3-го лица мн. числа (sie) — wohnen." },
+            " in einem kleinen Haus am Waldrand. Am Samstagmorgen ",
+            { num: 22, base: "AUFSTEHEN", ans: "stand", rule: "Präteritum от aufstehen (приставка auf ушла в конец) — stand." },
+            " ich sehr früh auf und ging in den Garten. Dort half ich ",
+            { num: 23, base: "MEIN", ans: "meinem", rule: "Dativ мужского рода (помог кому? — дедушке) — meinem." },
+            " Großvater beim Äpfelpflücken. Die Äpfel in diesem Jahr sind viel ",
+            { num: 24, base: "SÜSS", ans: "süßer", rule: "Komparativ от süß — süßer." },
+            " als im letzten Sommer. Am Nachmittag ",
+            { num: 25, base: "KOMMEN", ans: "kamen", rule: "Präteritum от сильного глагола kommen для мн. ч. — kamen." },
+            " auch meine Cousins zu Besuch. Wir spielten zusammen Fußball und ",
+            { num: 26, base: "SICH", ans: "uns", rule: "Возвратная частица sich для wir — uns." },
+            " unterhielten über die Schule. Am Abend wurde ein großes Lagerfeuer ",
+            { num: 27, base: "MACHEN", ans: "gemacht", rule: "Präteritum Passiv (wurde + Partizip II) — gemacht." },
+            ". Das war das ",
+            { num: 28, base: "SCHÖN", ans: "schönste", rule: "Superlativ после артикля das — schönste." },
+            " Wochenende des ganzen Monats!"
+          ]
+        },
+        {
+          title: "Часть 2. Словообразование (29–34): Umweltschutz im Alltag",
+          segments: [
+            "Der Schutz der Natur ist heute eine sehr ",
+            { num: 29, base: "WICHTIG", ans: "wichtige", rule: "Прилагательное в ж. роде после eine — wichtige." },
+            " Aufgabe für jeden Menschen. Leider gibt es in vielen Städten starke ",
+            { num: 30, base: "VERSCHMUTZEN", ans: "Verschmutzung", rule: "Существительное «загрязнение» от verschmutzen с суффиксом -ung." },
+            " der Luft und der Flüsse. Aber jeder kann einen ",
+            { num: 31, base: "PERSÖNLICH", ans: "persönlichen", rule: "Прилагательное в Akkusativ муж. рода (einen ... Beitrag) — persönlichen." },
+            " Beitrag leisten. Zum Beispiel ist es ",
+            { num: 32, base: "SINN", ans: "sinnvoll", rule: "Прилагательное «осмысленный / разумный» с суффиксом -voll — sinnvoll." },
+            ", Müll zu trennen und weniger Plastik zu benutzen. Es ist völlig ",
+            { num: 33, base: "MÖGLICH", ans: "unmöglich", rule: "По смыслу («совершенно невозможно представить») нужна приставка un-." },
+            ", unsere Zukunft ohne saubere Natur vorzustellen. Deshalb brauchen wir neue ",
+            { num: 34, base: "LÖSEN", ans: "Lösungen", rule: "Существительное во мн. ч. «решения» (-ung + -en) — Lösungen." },
+            " für ökologische Probleme."
+          ]
+        }
+      ]
+    }
+        ,
+    // ЛИСТ 3
+    {
+      name: "Лист 3",
+      texts: [
+        {
+          title: "Часть 1. Грамматика (20–28): Ein ungewöhnliches Hobby",
+          segments: [
+            "Mein älterer Bruder Lukas hat ein sehr interessantes Hobby. Er ",
+            { num: 20, base: "SAMMELN", ans: "sammelt", rule: "Präsens, 3-е лицо ед. ч. (er) — окончание -t." },
+            " schon seit fünf Jahren alte Postkarten aus verschiedenen Ländern. Jedes Wochenende geht er auf den Flohmarkt, um dort ",
+            { num: 21, base: "NEU", ans: "neue", rule: "Сильное склонение прилагательного во мн. ч. без артикля (Akkusativ) — окончание -e." },
+            " Schätze zu finden. Letzten Sonntag ",
+            { num: 22, base: "HABEN", ans: "hatte", rule: "Präteritum от глагола haben (3-е лицо ед. ч.) — hatte." },
+            " er besonders viel Glück. Er fand eine Karte aus dem Jahr 1920, die in Berlin ",
+            { num: 23, base: "DRUCKEN", ans: "gedruckt", rule: "Passiv Präteritum (wurde + Partizip II). От слабого глагола drucken — gedruckt." },
+            " wurde. «Schau mal, wie schön diese Stadt damals ",
+            { num: 24, base: "AUSSEHEN", ans: "aussah", rule: "Präteritum от сильного глагола aussehen (3-е лицо ед. ч.) с отделяемой приставкой aus-." },
+            "!», rief er begeistert. Ich interessiere mich eigentlich mehr für Sport als für Geschichte, aber ",
+            { num: 25, base: "DIESER", ans: "diese", rule: "Указательное местоимение для женского рода (die Karte, Nominativ) — diese." },
+            " alte Karte hat mir wirklich gut gefallen. Jetzt hängen ",
+            { num: 26, base: "ALLE", ans: "alle", rule: "Местоимение alle во множественном числе (Nominativ)." },
+            " seine besten Fundstücke an der Wand in seinem Zimmer. Wenn ich im nächsten Sommer nach Deutschland ",
+            { num: 27, base: "FAHREN", ans: "fahre", rule: "Präsens, 1-е лицо ед. ч. (ich) — окончание -e (корневая гласная не меняется)." },
+            ", bringe ich ihm bestimmt noch ein paar Karten mit. Lukas sagt, dass seine Sammlung bald die ",
+            { num: 28, base: "GROSS", ans: "größte", rule: "Превосходная степень (Superlativ) прилагательного groß с умлаутом и определённым артиклем die — größte." },
+            " in unserer ganzen Schule sein wird."
+          ]
+        },
+        {
+          title: "Часть 2. Словообразование (29–34): Der Berliner Tierpark",
+          segments: [
+            "In Berlin gibt es zwei große Zoos, und der Tierpark im Osten der Stadt ist besonders sehenswert. Er bietet den ",
+            { num: 29, base: "BESUCHEN", ans: "Besuchern", rule: "Существительное от глагола besuchen с суффиксом -er (во мн. ч. Dativ добавляется -n) — Besuchern." },
+            " eine riesige Parklandschaft mit vielen alten Bäumen. Hier leben Tiere aus allen Kontinenten in ",
+            { num: 30, base: "NATUR", ans: "natürlichen", rule: "Прилагательное от существительного Natur с умлаутом и суффиксом -lich (в Dativ мн. ч. окончание -en) — natürlichen." },
+            " Gehegen. Besonders bei Familien mit Kindern ist ein Spaziergang durch den Park sehr ",
+            { num: 31, base: "BELIEBEN", ans: "beliebt", rule: "Прилагательное (причастие II) от глагола belieben — beliebt (популярный)." },
+            ". Man kann dort problemlos den ganzen Tag verbringen, ohne dass es ",
+            { num: 32, base: "LANGWEILEN", ans: "langweilig", rule: "Прилагательное от глагола langweilen с суффиксом -ig — langweilig (скучно)." },
+            " wird. Die Mitarbeiter des Parks leisten eine wichtige Arbeit für den ",
+            { num: 33, base: "SCHÜTZEN", ans: "Schutz", rule: "Однокоренное существительное мужского рода от глагола schützen — der Schutz (защита)." },
+            " bedrohter Tierarten. Am Wochenende finden oft spannende Führungen statt, die für alle Gäste völlig ",
+            { num: 34, base: "KOSTEN", ans: "kostenlos", rule: "Прилагательное с суффиксом -los (значение отсутствия чего-либо) — kostenlos (бесплатный)." },
+            " sind."
+          ]
+        }
+      ]
+    },
+    // ЛИСТ 4
+    {
+      name: "Лист 4",
+      texts: [
+        {
+          title: "Часть 1. Грамматика (20–28): Die Schulzeitung",
+          segments: [
+            "An unserer Schule erscheint jeden Monat eine eigene Schülerzeitung. Vor zwei Jahren ",
+            { num: 20, base: "GRÜNDEN", ans: "gründeten", rule: "Präteritum от слабого глагола gründen (3-е лицо мн. ч., fünf Schüler) — суффикс -te + окончание -n." },
+            " fünf Schüler aus der neunten Klasse die Redaktion. Seitdem arbeiten wir zusammen an interessanten Artikeln über das Schulleben. Gestern ",
+            { num: 21, base: "BESPRECHEN", ans: "besprachen", rule: "Präteritum от сильного глагола besprechen (1-е лицо мн. ч., wir) — корневая гласная меняется на a." },
+            " wir die Themen für die nächste Ausgabe. Unser Chefredakteur Max schlug vor, ein Interview mit ",
+            { num: 22, base: "UNSER", ans: "unserem", rule: "Притяжательное местоимение unser после предлога mit (Dativ, мужской род: der Lehrer) — unserem." },
+            " neuen Sportlehrer zu machen. Alle fanden diese Idee super, weil Herr Weber schon an vielen ",
+            { num: 23, base: "INTERNATIONAL", ans: "internationalen", rule: "Прилагательное во множественном числе в Dativ (an vielen ...) — окончание -en." },
+            " Wettkämpfen teilgenommen hat. Morgen nach dem Unterricht ",
+            { num: 24, base: "TREFFEN", ans: "treffe", rule: "Präsens, 1-е лицо ед. ч. (ich) — корневая гласная e не меняется, окончание -e." },
+            " ich mich mit ihm in der Turnhalle. Ich habe schon zehn Fragen vorbereitet, die ",
+            { num: 25, base: "ICH", ans: "mir", rule: "Личное местоимение ich в Dativ (кому? мне) — mir." },
+            " besonders wichtig erscheinen. Wenn der Artikel fertig ",
+            { num: 26, base: "SEIN", ans: "ist", rule: "Präsens от глагола sein для 3-го лица ед. ч. (der Artikel) — ist." },
+            ", werden wir ihn auf der Schulwebsite veröffentlichen. Unsere Lehrer sagen, dass unsere Zeitung mit jeder Ausgabe ",
+            { num: 27, base: "GUT", ans: "besser", rule: "Сравнительная степень (Komparativ) от исключения gut — besser (лучше)." },
+            " wird. Darauf sind ",
+            { num: 28, base: "WIR", ans: "wir", rule: "Личное местоимение wir в Nominativ (кто? мы)." },
+            " natürlich sehr stolz!"
+          ]
+        },
+        {
+          title: "Часть 2. Словообразование (29–34): Radfahren in der Stadt",
+          segments: [
+            "Immer mehr Menschen in Deutschland lassen ihr Auto stehen und steigen aufs Fahrrad um. Das ist nicht nur gesund, sondern auch sehr ",
+            { num: 29, base: "UMWELT", ans: "umweltfreundlich", rule: "Сложное прилагательное от существительного Umwelt с суффиксом -freundlich — umweltfreundlich (экологичный)." },
+            ". In vielen Großstädten gibt es heute spezielle Fahrradwege, die das Fahren viel ",
+            { num: 30, base: "SICHER", ans: "sicherer", rule: "Сравнительная степень прилагательного sicher с суффиксом -er — sicherer (безопаснее)." },
+            " machen. Besonders im Sommer genießen es die Bürger, morgens an der frischen Luft zur Arbeit zu fahren. Allerdings muss man im Straßenverkehr immer sehr ",
+            { num: 31, base: "VORSICHT", ans: "vorsichtig", rule: "Прилагательное от существительного Vorsicht с суффиксом -ig — vorsichtig (осторожный)." },
+            " sein und einen Helm tragen. Für Touristen gibt es überall Stationen, an denen man sich bequem ein Rad ausleihen kann. Diese ",
+            { num: 32, base: "MÖGLICH", ans: "Möglichkeit", rule: "Существительное женского рода от прилагательного möglich с суффиксом -keit — Möglichkeit (возможность)." },
+            " nutzen jedes Jahr Tausende von Besuchern. Ein Ausflug mit dem Rad durch historische Altstädte ist ein unvergessliches ",
+            { num: 33, base: "ERLEBEN", ans: "Erlebnis", rule: "Существительное среднего рода от глагола erleben с суффиксом -nis — Erlebnis (впечатление, приключение)." },
+            " für Groß und Klein. Man bleibt flexibel und entdeckt viele kleine Gassen, die für Autos völlig ",
+            { num: 34, base: "ERREICHEN", ans: "unerreichbar", rule: "Прилагательное от глагола erreichen с отрицательной приставкой un- и суффиксом -bar — unerreichbar (недосягаемый)." },
+            " sind."
+          ]
+        }
+      ]
+    }
+        ,
+    // ЛИСТ 5
+    {
+      name: "Лист 5",
+      texts: [
+        {
+          title: "Часть 1. Грамматика (20–28): Ein Besuch im Technikmuseum",
+          segments: [
+            "Am letzten Samstag ",
+            { num: 20, base: "GEHEN", ans: "gingen", rule: "Präteritum от сильного глагола gehen (1-е лицо мн. ч., wir) — gingen." },
+            " mein Freund Tim und ich ins Deutsche Technikmuseum in Berlin. Das Museum ist riesig, und wir ",
+            { num: 21, base: "KÖNNEN", ans: "konnten", rule: "Präteritum от модального глагола können (1-е лицо мн. ч., wir) без умлаута — konnten." },
+            " an einem Tag gar nicht alles sehen. Besonders beeindruckt hat ",
+            { num: 22, base: "ICH", ans: "mich", rule: "Личное местоимение ich в Akkusativ (впечатлило кого? меня) — mich." },
+            " die große Halle mit alten Dampflokomotiven und Flugzeugen. Dort stand ein Flugzeug, das im Jahr 1930 ",
+            { num: 23, base: "BAUEN", ans: "gebaut", rule: "Passiv Präteritum (wurde + Partizip II). От слабого глагола bauen — gebaut." },
+            " wurde. Tim fotografierte jedes Exponat mit ",
+            { num: 24, base: "SEIN", ans: "seinem", rule: "Притяжательное местоимение sein после предлога mit (Dativ, ср. род: das Handy) — seinem." },
+            " neuen Handy. In der Abteilung für Computer gab es viele ",
+            { num: 25, base: "ALT", ans: "alte", rule: "Сильное склонение прилагательного во мн. ч. без артикля после viele (Akkusativ) — alte." },
+            " Geräte aus den achtziger Jahren. Sie sahen viel ",
+            { num: 26, base: "SCHWER", ans: "schwerer", rule: "Сравнительная степень (Komparativ) от прилагательного schwer с суффиксом -er — schwerer." },
+            " und größer aus als moderne Laptops. Wenn wir nächsten Monat wieder Zeit ",
+            { num: 27, base: "HABEN", ans: "haben", rule: "Präsens, 1-е лицо мн. ч. (wir) — haben." },
+            ", besuchen wir auch die Ausstellung über die ",
+            { num: 28, base: "ERSTE", ans: "ersten", rule: "Порядковое числительное во множественном числе после артикля die — ersten." },
+            " Raketen und Satelliten."
+          ]
+        },
+        {
+          title: "Часть 2. Словообразование (29–34): Lesen in der Freizeit",
+          segments: [
+            "Obwohl heute viele Jugendliche lieber Filme schauen, bleibt das Lesen eine sehr ",
+            { num: 29, base: "NÜTZEN", ans: "nützliche", rule: "Прилагательное женского рода от глагола nützen с суффиксом -lich (после eine) — nützliche." },
+            " Beschäftigung. Gute Bücher erweitern unseren Wortschatz und fördern die ",
+            { num: 30, base: "KREATIV", ans: "Kreativität", rule: "Существительное женского рода от прилагательного kreativ с суффиксом -ität — Kreativität." },
+            ". Wenn man eine spannende Geschichte liest, vergisst man oft alle ",
+            { num: 31, base: "ALLTAG", ans: "alltäglichen", rule: "Прилагательное от существительного Alltag с умлаутом и суффиксом -lich (во мн. ч. после alle) — alltäglichen." },
+            " Sorgen und Probleme. Manche Schüler finden dicke Romane allerdings zu ",
+            { num: 32, base: "LANG", ans: "langweilig", rule: "Сложное прилагательное от lang — langweilig (скучный)." },
+            " und bevorzugen kurze Erzählungen oder Comics. In jeder Stadtbibliothek gibt es eine riesige ",
+            { num: 33, base: "AUSWÄHLEN", ans: "Auswahl", rule: "Однокоренное существительное женского рода от глагола auswählen — die Auswahl (выбор)." },
+            " an Büchern für jedes Alter. Dort beraten die Mitarbeiter alle Leser sehr ",
+            { num: 34, base: "GEDULD", ans: "geduldig", rule: "Прилагательное (наречие) от существительного Geduld с суффиксом -ig — geduldig (терпеливо)." },
+            " und helfen bei der Suche."
+          ]
+        }
+      ]
+    },
+    // ЛИСТ 6
+    {
+      name: "Лист 6",
+      texts: [
+        {
+          title: "Часть 1. Грамматика (20–28): Unser Schulgarten",
+          segments: [
+            "Hinter unserer Schule gibt es einen kleinen Garten, um den sich die Schüler selbst kümmern. Im Frühling ",
+            { num: 20, base: "PFLANZEN", ans: "pflanzten", rule: "Präteritum от слабого глагола pflanzen (1-е лицо мн. ч., wir) — pflanzten." },
+            " wir dort bunte Blumen, Tomaten und Erdbeeren. Jeden Dienstag nach dem Unterricht ",
+            { num: 21, base: "GIESSEN", ans: "gießt", rule: "Präsens, 3-е лицо ед. ч. (unsere Gruppe) — окончание -t." },
+            " unsere Gruppe die Beete und entfernt das Unkraut. Unsere Biologielehrerin Frau Klein hilft ",
+            { num: 22, base: "WIR", ans: "uns", rule: "Личное местоимение wir в Dativ (помогает кому? нам) — uns." },
+            " dabei mit guten Tipps. Sie sagt, dass frisches Gemüse aus dem eigenen Garten am ",
+            { num: 23, base: "GESUND", ans: "gesündesten", rule: "Превосходная степень (Superlativ) с am и умлаутом: am gesündesten." },
+            " schmeckt. Letzte Woche ",
+            { num: 24, base: "ERNTEN", ans: "ernteten", rule: "Präteritum от слабого глагола ernten (основа на -t, поэтому суффикс -ete + -n) — ernteten." },
+            " wir schon die ersten roten Erdbeeren. Wir brachten sie in die Schulküche, wo daraus ein leckerer Kuchen ",
+            { num: 25, base: "BACKEN", ans: "gebacken", rule: "Passiv Präteritum (wurde + Partizip II). От сильного глагола backen — gebacken." },
+            " wurde. Alle Kinder aus ",
+            { num: 26, base: "DIESER", ans: "dieser", rule: "Указательное местоимение для женского рода в Dativ (aus der Klasse) — dieser." },
+            " Klasse durften ein Stück probieren. Im Herbst ",
+            { num: 27, base: "WOLLEN", ans: "wollen", rule: "Präsens от модального глагола wollen (1-е лицо мн. ч., wir) — wollen." },
+            " wir auch noch ein paar junge Apfelbäume pflanzen, damit unser Garten noch ",
+            { num: 28, base: "GRÜN", ans: "grüner", rule: "Сравнительная степень (Komparativ) от прилагательного grün с суффиксом -er — grüner." },
+            " wird."
+          ]
+        },
+        {
+          title: "Часть 2. Словообразование (29–34): Reisen mit dem Zug",
+          segments: [
+            "Für viele Menschen ist die Bahn das bequemste Verkehrsmittel für kurze und lange Strecken. Während der Fahrt kann man entspannt aus dem Fenster schauen und die ",
+            { num: 29, base: "SCHÖN", ans: "Schönheit", rule: "Существительное женского рода от прилагательного schön с суффиксом -heit — Schönheit (красота)." },
+            " der Landschaft genießen. Außerdem gilt das Zugfahren als besonders ",
+            { num: 30, base: "ZUVERLÄSSIG", ans: "zuverlässig", rule: "Прилагательное (краткая форма в роли сказуемого) — zuverlässig (надёжный)." },
+            " und sicher, weil man nicht im Stau steht. In modernen Schnellzügen gibt es kostenfreies WLAN, was für Geschäftsleute und Studenten sehr ",
+            { num: 31, base: "PRAXIS", ans: "praktisch", rule: "Прилагательное от существительного Praxis с суффиксом -isch — praktisch (удобно, практично)." },
+            " ist. Allerdings sind Zugtickets manchmal ziemlich teuer, wenn man sie erst kurz vor der ",
+            { num: 32, base: "ABFAHREN", ans: "Abfahrt", rule: "Существительное женского рода от глагола abfahren — die Abfahrt (отправление)." },
+            " kauft. Wer seine Reise früh plant, findet oft ",
+            { num: 33, base: "GÜNSTIG", ans: "günstige", rule: "Прилагательное во множественном числе без артикля (Akkusativ) — günstige (выгодные)." },
+            " Sparangebote im Internet. So wird der Urlaub schon auf dem Weg zum Ziel zu einer angenehmen ",
+            { num: 34, base: "ERHOLEN", ans: "Erholung", rule: "Существительное женского рода от глагола erholen с суффиксом -ung — Erholung (отдых)." },
+            "."
+          ]
+        }
+      ]
+    }
+        ,
+    // ЛИСТ 7
+    {
+      name: "Лист 7",
+      texts: [
+        {
+          title: "Часть 1. Грамматика (20–28): Ein Hund im Haus",
+          segments: [
+            "Schon seit vielen Jahren wünschte sich meine kleine Schwester Lisa einen Hund. Vor zwei Monaten ",
+            { num: 20, base: "ERFÜLLEN", ans: "erfüllten", rule: "Präteritum от слабого глагола erfüllen (3-е лицо мн. ч., unsere Eltern) — erfüllten." },
+            " unsere Eltern ihr endlich diesen großen Wunsch. Sie brachten einen kleinen braunen Welpen aus dem Tierheim mit, den wir Bello ",
+            { num: 21, base: "NENNEN", ans: "nannten", rule: "Präteritum от неправильного слабого глагола nennen (1-е лицо мн. ч., wir) — nannten." },
+            ". Am Anfang hatte Bello ein bisschen Angst vor ",
+            { num: 22, base: "SEIN", ans: "seiner", rule: "Притяжательное местоимение sein после предлога vor (Dativ, ж. род: die Umgebung) — seiner." },
+            " neuen Umgebung, aber nach ein paar Tagen fühlte er sich schon wie zu Hause. Jetzt ",
+            { num: 23, base: "LAUFEN", ans: "läuft", rule: "Präsens от сильного глагола laufen для 3-го лица ед. ч. (er) с умлаутом — läuft." },
+            " er fröhlich durch die ganze Wohnung und spielt gern mit seinem gelben Ball. Jeden Morgen vor der Schule ",
+            { num: 24, base: "MÜSSEN", ans: "muss", rule: "Präsens от модального глагола müssen (1-е лицо ед. ч., ich) — muss." },
+            " ich mit ihm im Park spazieren gehen. Das macht ",
+            { num: 25, base: "ICH", ans: "mir", rule: "Личное местоимение ich в Dativ (кому? мне) — mir." },
+            " viel Spaß, obwohl ich jetzt früher aufstehen muss. Unsere Nachbarn sagen, dass Bello der ",
+            { num: 26, base: "LUSTIG", ans: "lustigste", rule: "Превосходная степень (Superlativ) прилагательного lustig после артикля der — lustigste." },
+            " Hund in der ganzen Straße ist. Im nächsten Sommer ",
+            { num: 27, base: "NEHMEN", ans: "nehmen", rule: "Präsens от глагола nehmen для 1-го лица мн. ч. (wir) — nehmen." },
+            " wir ihn bestimmt mit ans Meer, damit er auch im Wasser ",
+            { num: 28, base: "SCHWIMMEN", ans: "schwimmen", rule: "Инфинитив после союза damit / в составе сказуемого — schwimmen." },
+            " kann."
+          ]
+        },
+        {
+          title: "Часть 2. Словообразование (29–34): Musik in unserem Leben",
+          segments: [
+            "Fast jeder Mensch hört gern Musik, denn sie begleitet uns durch den ganzen Tag. Wenn wir traurig sind, kann eine fröhliche Melodie unsere ",
+            { num: 29, base: "STIMMEN", ans: "Stimmung", rule: "Существительное женского рода от глагола stimmen с суффиксом -ung — Stimmung (настроение)." },
+            " sofort verbessern. Viele Jugendliche spielen selbst ein Instrument oder singen in einer Schulband. Das gemeinsame Musizieren fördert die ",
+            { num: 30, base: "FREUND", ans: "Freundschaft", rule: "Существительное женского рода от существительного Freund с суффиксом -schaft — Freundschaft (дружба)." },
+            " und lehrt Teamarbeit. Natürlich braucht man viel Geduld und Fleiß, um ein Musikinstrument ",
+            { num: 31, base: "ERFOLG", ans: "erfolgreich", rule: "Прилагательное (наречие) от существительного Erfolg с суффиксом -reich — erfolgreich (успешно)." },
+            " zu erlernen. Am Ende des Schuljahres findet in unserer Aula immer ein großes Konzert statt, auf das sich alle ",
+            { num: 32, base: "TEILNEHMEN", ans: "Teilnehmer", rule: "Существительное от глагола teilnehmen с суффиксом -er (во мн. ч.) — Teilnehmer (участники)." },
+            " lange vorbereiten. Die Zuschauer sind jedes Mal von den ",
+            { num: 33, base: "WUNDER", ans: "wunderbaren", rule: "Прилагательное от существительного Wunder с суффиксом -bar (в Dativ мн. ч. после von den) — wunderbaren." },
+            " Liedern begeistert. Für die jungen Musiker ist der laute Applaus die schönste ",
+            { num: 34, base: "BELOHNEN", ans: "Belohnung", rule: "Существительное женского рода от глагола belohnen с суффиксом -ung — Belohnung (награда)." },
+            " für ihre Mühe."
+          ]
+        }
+      ]
+    },
+    // ЛИСТ 8
+    {
+      name: "Лист 8",
+      texts: [
+        {
+          title: "Часть 1. Грамматика (20–28): Ein Tag in den Bergen",
+          segments: [
+            "In den letzten Winterferien ",
+            { num: 20, base: "VERBRINGEN", ans: "verbrachten", rule: "Präteritum от неправильного глагола verbringen (1-е лицо мн. ч., wir) — verbrachten." },
+            " wir eine wunderbare Woche in den Alpen. Jeden Tag schien die Sonne, und der Schnee glitzerte in ",
+            { num: 21, base: "ALL", ans: "allen", rule: "Местоимение all в Dativ множественного числа (in allen Farben) — allen." },
+            " Farben. Mein Vater hat mir gezeigt, wie man richtig Ski ",
+            { num: 22, base: "FAHREN", ans: "fährt", rule: "Präsens от сильного глагола fahren для 3-го лица ед. ч. (man) с умлаутом — fährt." },
+            ". Am ersten Tag bin ich oft hingefallen, aber am dritten Tag ",
+            { num: 23, base: "KLAPPEN", ans: "klappte", rule: "Präteritum от слабого глагола klappen (3-е лицо ед. ч., es) — klappte." },
+            " es schon viel besser. Mittags machten wir immer eine Pause in einer kleinen Berghütte, wo ",
+            { num: 24, base: "WIR", ans: "uns", rule: "Личное местоимение wir в Dativ (кому? нам) — uns." },
+            " heiße Suppe und Tee serviert wurden. Von dort oben hatte man einen viel ",
+            { num: 25, base: "WEIT", ans: "weiteren", rule: "Сравнительная степень (Komparativ) от weit в Akkusativ муж. рода (einen ... Blick) — weiteren." },
+            " Blick auf das Tal als von unserem Hotel. Am letzten Abend ",
+            { num: 26, base: "PACKEN", ans: "packten", rule: "Präteritum от слабого глагола packen (1-е лицо мн. ч., wir) — packten." },
+            " wir traurig unsere Koffer, weil niemand nach Hause fahren wollte. Meine Mutter sagte, dass dies der ",
+            { num: 27, base: "ERHOLSAM", ans: "erholsamste", rule: "Превосходная степень (Superlativ) прилагательного erholsam после артикля der — erholsamste." },
+            " Urlaub der letzten Jahre war. Nächstes Jahr ",
+            { num: 28, base: "FLIEGEN", ans: "fliegen", rule: "Präsens от глагола fliegen для 1-го лица мн. ч. (wir) — fliegen." },
+            " wir bestimmt wieder in die Berge!"
+          ]
+        },
+        {
+          title: "Часть 2. Словообразование (29–34): Gesunde Ernährung",
+          segments: [
+            "Eine ausgewogene Ernährung spielt eine entscheidende Rolle für unsere ",
+            { num: 29, base: "GESUND", ans: "Gesundheit", rule: "Существительное женского рода от прилагательного gesund с суффиксом -heit — Gesundheit (здоровье)." },
+            " und Leistungsfähigkeit. Ärzte empfehlen, jeden Tag viel frisches Obst und Gemüse zu essen. Fast Food und Süßigkeiten schmecken zwar gut, sind aber auf Dauer sehr ",
+            { num: 30, base: "SCHADEN", ans: "schädlich", rule: "Прилагательное от глагола/сущ. Schaden с умлаутом и суффиксом -lich — schädlich (вредный)." },
+            " für den Körper. Außerdem sollte man darauf achten, regelmäßig und nicht zu hastig zu essen. In vielen Schulen gibt es heute spezielle Projekte, die den Schülern das ",
+            { num: 31, base: "KOCHEN", ans: "Kochen", rule: "Субстантивированный инфинитив среднего рода от глагола kochen — das Kochen (готовка)." },
+            " gesunder Gerichte beibringen. Es ist wirklich ",
+            { num: 32, base: "ERSTAUNEN", ans: "erstaunlich", rule: "Прилагательное от глагола erstaunen с суффиксом -lich — erstaunlich (удивительно)." },
+            ", wie schnell man aus einfachen Zutaten ein leckeres Mittagessen zubereiten kann. Wer sich gesund ernährt, fühlt sich im Alltag deutlich ",
+            { num: 33, base: "ENERGIE", ans: "energiereicher", rule: "Сравнительная степень прилагательного energiereich (от Energie + -reich) — energiereicher (более энергичным)." },
+            " und kann sich im Unterricht viel besser konzentrieren. Eine bewusste Lebensweise ist daher die beste ",
+            { num: 34, base: "VORBEREITEN", ans: "Vorbereitung", rule: "Существительное женского рода от глагола vorbereiten с суффиксом -ung — Vorbereitung (подготовка)." },
+            " auf ein aktives Leben."
+          ]
+        }
+      ]
+    }
+        ,
+    // ЛИСТ 9
+    {
+      name: "Лист 9",
+      texts: [
+        {
+          title: "Часть 1. Грамматика (20–28): Freiwillige Arbeit im Tierheim",
+          segments: [
+            "Seit sechs Monaten arbeite ich am Wochenende ehrenamtlich in einem städtischen Tierheim. Am Anfang ",
+            { num: 20, base: "WISSEN", ans: "wusste", rule: "Präteritum от неправильного глагола wissen (1-е лицо ед. ч., ich) — wusste." },
+            " ich noch nicht genau, welche Aufgaben auf mich warten. Jetzt weiß ich, dass die Tiere dort viel Liebe und Aufmerksamkeit ",
+            { num: 21, base: "BRAUCHEN", ans: "brauchen", rule: "Präsens от слабого глагола brauchen (3-е лицо мн. ч., die Tiere) — brauchen." },
+            ". Jeden Samstagmorgen füttere ich die Katzen und reinige ",
+            { num: 22, base: "SIE", ans: "ihre", rule: "Притяжательное местоимение для «они» (их клетки, Akk. Pl.) — ihre." },
+            " Käfige. Danach gehe ich mit den großen Hunden spazieren, die den ganzen Tag im Zwinger ",
+            { num: 23, base: "SITZEN", ans: "sitzen", rule: "Präsens от глагола sitzen (3-е лицо мн. ч.) — sitzen." },
+            ". Letzten Monat ",
+            { num: 24, base: "FINDEN", ans: "fand", rule: "Präteritum от сильного глагола finden (3-е лицо ед. ч., ein kleiner Kater) — fand." },
+            " ein kleiner schwarzer Kater, um den ich mich besonders gekümmert habe, endlich eine neue Familie. Darüber ",
+            { num: 25, base: "FREUEN", ans: "freute", rule: "Präteritum от слабого возвратного глагола sich freuen (1-е лицо ед. ч., ich) — freute." },
+            " ich mich riesig! Die Leiterin des Tierheims sagt, dass freiwillige Helfer für das Team immer ",
+            { num: 26, base: "WICHTIG", ans: "wichtiger", rule: "Сравнительная степень (Komparativ) от прилагательного wichtig с суффиксом -er — wichtiger." },
+            " werden. Diese Arbeit hat ",
+            { num: 27, base: "ICH", ans: "mir", rule: "Личное местоимение ich в Dativ (кому? мне) — mir." },
+            " gezeigt, wie viel Freude man anderen Lebewesen schenken kann. Auch nach dem Schulabschluss ",
+            { num: 28, base: "MÖCHTEN", ans: "möchte", rule: "Форма глагола möchten (Konjunktiv II от mögen) для 1-го лица ед. ч. (ich) — möchte." },
+            " ich das Tierheim weiterhin unterstützen."
+          ]
+        },
+        {
+          title: "Часть 2. Словообразование (29–34): Fremdsprachen lernen",
+          segments: [
+            "In unserer globalisierten Welt wird das Beherrschen von Fremdsprachen immer wichtiger. Wer mehrere Sprachen spricht, hat später viel bessere ",
+            { num: 29, base: "BERUF", ans: "berufliche", rule: "Прилагательное от существительного Beruf с суффиксом -lich (во мн. ч. Akkusativ) — berufliche." },
+            " Chancen auf dem internationalen Arbeitsmarkt. Außerdem fällt es auf Reisen viel leichter, mit den Einheimischen ins ",
+            { num: 30, base: "SPRECHEN", ans: "Gespräch", rule: "Однокоренное существительное среднего рода от глагола sprechen — das Gespräch (разговор)." },
+            " zu kommen und fremde Kulturen besser zu verstehen. Beim Sprachenlernen sollte man keine Angst davor haben, ",
+            { num: 31, base: "FEHLEN", ans: "Fehler", rule: "Существительное во множественном числе от глагола fehlen — Fehler (ошибки)." },
+            " zu machen, denn sie gehören ganz normal zum Lernprozess. Moderne Apps und Online-Kurse bieten heute eine sehr ",
+            { num: 32, base: "ABWECHSELN", ans: "abwechslungsreiche", rule: "Прилагательное от глагола abwechseln с суффиксом -reich (в ж. роде Akkusativ после eine) — abwechslungsreiche (разнообразная)." },
+            " Möglichkeit, Vokabeln und Grammatik zu trainieren. Trotzdem bleibt der ",
+            { num: 33, base: "PERSÖNLICH", ans: "persönliche", rule: "Прилагательное мужского рода от persönlich после артикля der — persönliche (личный)." },
+            " Kontakt zu Muttersprachlern das effektivste Mittel, um flüssig sprechen zu lernen. Mit etwas Ausdauer erreicht jeder Schüler ein ",
+            { num: 34, base: "BEFRIEDIGEN", ans: "befriedigendes", rule: "Прилагательное (причастие I) от глагола befriedigen в ср. роде Akkusativ (после ein) — befriedigendes (удовлетворительный)." },
+            " Ergebnis."
+          ]
+        }
+      ]
+    },
+    // ЛИСТ 10
+    {
+      name: "Лист 10",
+      texts: [
+        {
+          title: "Часть 1. Грамматика (20–28): Ein Sommercamp an der Ostsee",
+          segments: [
+            "Im vergangenen Juli ",
+            { num: 20, base: "VERBRINGEN", ans: "verbrachte", rule: "Präteritum от неправильного глагола verbringen (1-е лицо ед. ч., ich) — verbrachte." },
+            " ich zwei unvergessliche Wochen in einem internationalen Jugendcamp an der Ostsee. Dort ",
+            { num: 21, base: "TREFFEN", ans: "traf", rule: "Präteritum от сильного глагола treffen (1-е лицо ед. ч., ich) — traf." },
+            " ich Jugendliche aus Deutschland, Polen und Österreich. Obwohl wir aus verschiedenen Ländern kamen, ",
+            { num: 22, base: "VERSTEHEN", ans: "verstanden", rule: "Präteritum от сильного глагола verstehen (1-е лицо мн. ч., wir) — verstanden." },
+            " wir uns auf Deutsch ausgezeichnet. Jeden Vormittag fanden interessante Workshops statt, in denen wir zusammen Theater ",
+            { num: 23, base: "SPIELEN", ans: "spielten", rule: "Präteritum от слабого глагола spielen (1-е лицо мн. ч., wir) — spielten." },
+            " oder Musik machten. Nachmittags gingen alle an den Strand, weil das Wasser in diesem Sommer viel ",
+            { num: 24, base: "WARM", ans: "wärmer", rule: "Сравнительная степень (Komparativ) от warm с умлаутом — wärmer." },
+            " war als gewöhnlich. Am letzten Abend wurde für ",
+            { num: 25, base: "ALLE", ans: "alle", rule: "Местоимение alle во множественном числе после предлога für (Akkusativ) — alle." },
+            " Teilnehmer eine große Abschiedsparty organisiert. Wir tauschten unsere Adressen aus und versprachen ",
+            { num: 26, base: "WIR", ans: "uns", rule: "Личное / взаимное местоимение wir в Dativ (обещали кому? друг другу / себе) — uns." },
+            ", in Kontakt zu bleiben. Für mich war das der ",
+            { num: 27, base: "SPANNEND", ans: "spannendste", rule: "Превосходная степень (Superlativ) прилагательного spannend после артикля der — spannendste." },
+            " Sommer meines Lebens. Ich hoffe, dass ich nächstes Jahr wieder dorthin ",
+            { num: 28, base: "FAHREN", ans: "fahren", rule: "Инфинитив в придаточном предложении цели/надежды (могу поехать / поеду) — fahren." },
+            " kann."
+          ]
+        },
+        {
+          title: "Часть 2. Словообразование (29–34): Digitales Lernen in der Schule",
+          segments: [
+            "Digitale Medien spielen im modernen Schulunterricht eine immer größere Rolle. Tablets und interaktive Tafeln machen den Unterricht oft ",
+            { num: 29, base: "ANSCHAULICH", ans: "anschaulicher", rule: "Сравнительная степень прилагательного anschaulich с суффиксом -er — anschaulicher (нагляднее)." },
+            " und interessanter für die Schüler. Mit Hilfe von Lernplattformen können Jugendliche Aufgaben bequem von zu Hause aus erledigen und erhalten sofort eine ",
+            { num: 30, base: "RÜCKMELDEN", ans: "Rückmeldung", rule: "Существительное женского рода от глагола rückmelden с суффиксом -ung — Rückmeldung (обратная связь)." },
+            " zu ihren Ergebnissen. Allerdings erfordert das Lernen am Bildschirm auch ein hohes Maß an ",
+            { num: 31, base: "SELBSTSTÄNDIG", ans: "Selbstständigkeit", rule: "Существительное женского рода от прилагательного selbstständig с суффиксом -keit — Selbstständigkeit (самостоятельность)." },
+            " und Disziplin. Lehrer weisen darauf hin, dass man im Internet immer ",
+            { num: 32, base: "KRITIK", ans: "kritisch", rule: "Прилагательное (наречие) от существительного Kritik с суффиксом -isch — kritisch (критически)." },
+            " prüfen muss, welche Quellen wirklich seriös sind. Trotz aller technischen ",
+            { num: 33, base: "ENTWICKELN", ans: "Entwicklungen", rule: "Существительное во множественном числе от глагола entwickeln (-ung + -en) — Entwicklungen (разработки, тенденции)." },
+            " bleibt der direkte Austausch im Klassenzimmer jedoch völlig ",
+            { num: 34, base: "ERSETZEN", ans: "unersetzlich", rule: "Прилагательное от глагола ersetzen с отрицательной приставкой un- и суффиксом -lich — unersetzlich (незаменимый)." },
+            "."
+          ]
+        }
       ]
     }
   ];
 
+  let currentExamIndex = 0;
   let lastFocusedExamInput = null;
 
   function insertToActive(char) {
@@ -1115,9 +1572,32 @@
     }
   }
 
+  function changeExamSheet(step) {
+    const next = currentExamIndex + step;
+    if (next >= 0 && next < examSheets.length) {
+      currentExamIndex = next;
+      renderExam();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
+  function selectExamSheet(idx) {
+    currentExamIndex = idx;
+    renderExam();
+  }
+
   function renderExam() {
+    const sheet = examSheets[currentExamIndex];
+    document.getElementById("examSheetTitle").textContent = `${sheet.name} из ${examSheets.length}`;
+    document.getElementById("examSummary").innerHTML = "";
+
+    const btnsBox = document.getElementById("examSheetButtons");
+    btnsBox.innerHTML = examSheets.map((s, i) => `
+      <button type="button" class="topic-btn ${i === currentExamIndex ? "active" : ""}" onclick="selectExamSheet(${i})">${s.name}</button>
+    `).join("");
+
     const container = document.getElementById("examContainer");
-    container.innerHTML = examTexts.map(block => {
+    container.innerHTML = sheet.texts.map(block => {
       const htmlText = block.segments.map(seg => {
         if (typeof seg === "string") return seg;
         return `
@@ -1138,11 +1618,12 @@
   }
 
   function checkFullExam() {
+    const sheet = examSheets[currentExamIndex];
     let correctCount = 0;
     let totalGaps = 0;
     let mistakesHtml = "";
 
-    examTexts.forEach(block => {
+    sheet.texts.forEach(block => {
       block.segments.forEach(seg => {
         if (typeof seg === "object") {
           totalGaps++;
@@ -1164,11 +1645,12 @@
     const summary = document.getElementById("examSummary");
     summary.innerHTML = `
       <div class="card" style="border-left: 5px solid ${correctCount === totalGaps ? "var(--green)" : "var(--accent)"};">
-        <h3 style="margin-bottom: 8px;">Результат варианта: ${correctCount} из ${totalGaps} баллов</h3>
-        ${mistakesHtml ? `<ul style="padding-left: 18px; font-size: 0.92rem;">${mistakesHtml}</ul>` : `<p style="color: var(--green); font-weight: 600;">🎉 Идеально! Все задания варианта решены без единой ошибки.</p>`}
+        <h3 style="margin-bottom: 8px;">Результат (${sheet.name}): ${correctCount} из ${totalGaps} баллов</h3>
+        ${mistakesHtml ? `<ul style="padding-left: 18px; font-size: 0.92rem;">${mistakesHtml}</ul>` : `<p style="color: var(--green); font-weight: 600;">🎉 Идеально! Все задания этого листа решены без единой ошибки.</p>`}
       </div>
     `;
   }
+
 
   renderTasks(grammarTasks, "grammarList", "Задание");
   renderTasks(wordformTasks, "wordformList", "Задание");

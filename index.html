@@ -3428,21 +3428,29 @@
       `;
     }).join("");
   }
+  function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
-  function checkFullExam() {
-    const sheet = examSheets[currentExamIndex];
-    let correctCount = 0;
-    let totalGaps = 0;
-    let mistakesHtml = "";
+function checkFullExam() {
+  const sheet = examSheets[currentExamIndex];
+  let correctCount = 0;
+  let totalGaps = 0;
+  let mistakesHtml = "";
 
-    sheet.texts.forEach(block => {
-      block.segments.forEach(seg => {
-        if (typeof seg === "object") {
-          totalGaps++;
-          const inp = document.getElementById(`ex_${seg.num}`);
-          const val = inp.value.trim();
-          const safeVal = val.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-          inp.classList.remove("correct-inp", "wrong-inp");
+  sheet.texts.forEach(block => {
+    block.segments.forEach(seg => {
+      if (typeof seg === "object") {
+        totalGaps++;
+        const inp = document.getElementById(`ex_${seg.num}`);
+        const val = inp.value.trim();
+        const safeVal = escapeHtml(val);
+        inp.classList.remove("correct-inp", "wrong-inp");
 
           if (val.toLowerCase() === seg.ans.toLowerCase()) {
             correctCount++;
@@ -3481,9 +3489,17 @@
     const btn = document.getElementById("themeToggle");
     if (btn) btn.textContent = "☀️ Светлая тема";
   }
-  
-  let fcLearned = JSON.parse(localStorage.getItem("deutsch_oge_learned") || "[]");
-  let fcUnlearned = JSON.parse(localStorage.getItem("deutsch_oge_unlearned") || "[]");
+  function loadStorageArray(key) {
+  try {
+    const data = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+let fcLearned = loadStorageArray("deutsch_oge_learned");
+let fcUnlearned = loadStorageArray("deutsch_oge_unlearned");
   let fcFolder = "all";
   let fcQueue = [];
   let fcIndex = 0;

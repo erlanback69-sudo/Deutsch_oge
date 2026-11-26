@@ -17,6 +17,38 @@
       --muted: #6b7280;
       --border: #e5e7eb;
     }
+        body.dark-theme {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --primary: #38bdf8;
+      --border: #334155;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    body.dark-theme .card,
+    body.dark-theme .word-card {
+      background-color: var(--card);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    body.dark-theme input,
+    body.dark-theme .inline-input {
+      background-color: #0f172a;
+      color: #f8fafc;
+      border-color: #475569;
+    }
+    body.dark-theme .topic-btn,
+    body.dark-theme .umlaut-btn {
+      background-color: #334155;
+      color: #f1f5f9;
+      border-color: #475569;
+    }
+    body.dark-theme .topic-btn.active {
+      background-color: var(--primary);
+      color: #0f172a;
+    }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -391,6 +423,18 @@
       cursor: pointer;
       margin-top: 8px;
       }
+        body.dark-theme header { background: #1e293b; }
+    body.dark-theme .stats-bar,
+    body.dark-theme nav button,
+    body.dark-theme .exam-umlauts {
+      background: #1e293b;
+      color: var(--text);
+      border-color: var(--border);
+    }
+    body.dark-theme nav button.active {
+      background: var(--primary);
+      color: #0f172a;
+    }
     
   </style>
 </head>
@@ -399,6 +443,9 @@
 <header>
   <h1>🇩🇪 Deutsch OGE — Подготовка к экзамену</h1>
   <p>Грамматика (20–28) • Словообразование (29–34) • Словарь • Правила</p>
+      <button type="button" id="themeToggle" onclick="toggleTheme()" style="margin-top: 10px; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.12); color: inherit; cursor: pointer; font-size: 0.85rem;">
+      🌙 Тёмная тема
+    </button>
 </header>
 
 <div class="stats-bar">
@@ -1656,6 +1703,18 @@
   renderTasks(wordformTasks, "wordformList", "Задание");
   renderVocab();
   renderExam();
+  function toggleTheme() {
+    const isDark = document.body.classList.toggle("dark-theme");
+    const btn = document.getElementById("themeToggle");
+    if (btn) btn.textContent = isDark ? "☀️ Светлая тема" : "🌙 Тёмная тема";
+    localStorage.setItem("deutsch_oge_theme", isDark ? "dark" : "light");
+  }
+
+  if (localStorage.getItem("deutsch_oge_theme") === "dark") {
+    document.body.classList.add("dark-theme");
+    const btn = document.getElementById("themeToggle");
+    if (btn) btn.textContent = "☀️ Светлая тема";
+  }
 </script>
 </body>
 </html>

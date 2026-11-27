@@ -524,6 +524,7 @@
   <button onclick="switchTab('rules', this)">Правила ОГЭ</button>
   <button onclick="switchTab('exam', this)">Вариант ОГЭ (тексты)</button>
   <button onclick="switchTab('cards', this)">🃏 Карточки (свайпы)</button>
+  <button onclick="switchTab('readingAloud', this)">📖 Чтение вслух</button>
 </nav>
 
 <main>
@@ -980,6 +981,24 @@
       </div>
     </div>
   </section>
+  
+  <!-- ВКЛАДКА 7: ЧТЕНИЕ ВСЛУХ (ЗАДАНИЕ 1 УСТНОЙ ЧАСТИ) -->
+<section id="readingAloud" class="tab-section">
+  <div class="topic-filters" id="raTextBtns"></div>
+
+  <div class="card" style="text-align: center; border-left: 5px solid var(--primary);">
+    <div id="raTimerLabel" style="font-size: 0.9rem; color: var(--muted); margin-bottom: 4px;">Задание 1 ОГЭ: Чтение текста вслух</div>
+    <div id="raTimerDisplay" style="font-size: 2.2rem; font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums;">01:30</div>
+    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px;">
+      <button type="button" class="topic-btn" onclick="startRaTimer(90, 'Подготовка (1 мин 30 сек)')">⏱ 1:30 (Подготовка)</button>
+      <button type="button" class="topic-btn" onclick="startRaTimer(120, 'Чтение вслух (2 мин)')">🎙 2:00 (Чтение вслух)</button>
+      <button type="button" class="topic-btn" id="raPauseBtn" onclick="toggleRaPause()">⏸ Пауза</button>
+      <button type="button" class="topic-btn" onclick="resetRaTimer()">🔄 Сброс</button>
+    </div>
+  </div>
+
+  <div id="raContainer"></div>
+</section>
 </main>
 <script>
   // База заданий по грамматике (задания 20-28 ОГЭ — 15 штук)

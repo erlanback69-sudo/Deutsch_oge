@@ -919,13 +919,11 @@
   </section>
   <!-- ВКЛАДКА 5: РЕАЛЬНЫЙ ВАРИАНТ ОГЭ (10 ЛИСТОВ) -->
   <section id="exam" class="tab-section">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
-      <button type="button" class="topic-btn" onclick="changeExamSheet(-1)">⬅️ Предыдущий лист</button>
-      <b id="examSheetTitle" style="font-size: 1rem; color: var(--primary);">Лист 1 из 10</b>
-      <button type="button" class="topic-btn" onclick="changeExamSheet(1)">Следующий лист ➡️</button>
-    </div>
-
-    <div class="topic-filters" id="examSheetButtons"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px;">
+    <button type="button" class="topic-btn" id="prevExamBtn" onclick="changeExamSheet(-1)">⬅️ Назад</button>
+    <div id="examSheetTitle" style="text-align: center; font-weight: 700; font-size: 0.95rem; color: var(--primary);">Лист 1 из 10 (осталось 9)</div>
+    <button type="button" class="topic-btn" id="nextExamBtn" onclick="changeExamSheet(1)">Следующий ➡️</button>
+  </div>
 
     <div class="exam-umlauts">
       <span style="font-size: 0.85rem; color: var(--muted);">Вставить букву:</span>
@@ -3786,15 +3784,18 @@ function renderVocab(selectedTopic = "Все") {
     renderExam();
   }
 
-  function renderExam() {
-    const sheet = examSheets[currentExamIndex];
-    document.getElementById("examSheetTitle").textContent = `${sheet.name} из ${examSheets.length}`;
-    document.getElementById("examSummary").innerHTML = "";
+function renderExam() {
+  const sheet = examSheets[currentExamIndex];
+  const remaining = examSheets.length - currentExamIndex - 1;
+  document.getElementById("examSheetTitle").textContent =
+    `${sheet.name} из ${examSheets.length} (осталось ${remaining})`;
+  document.getElementById("examSummary").innerHTML = "";
 
-    const btnsBox = document.getElementById("examSheetButtons");
-    btnsBox.innerHTML = examSheets.map((s, i) => `
-      <button type="button" class="topic-btn ${i === currentExamIndex ? "active" : ""}" onclick="selectExamSheet(${i})">${s.name}</button>
-    `).join("");
+  const prevBtn = document.getElementById("prevExamBtn");
+  const nextBtn = document.getElementById("nextExamBtn");
+  if (prevBtn) prevBtn.disabled = currentExamIndex === 0;
+  if (nextBtn) nextBtn.disabled = currentExamIndex === examSheets.length - 1;
+
 
     const container = document.getElementById("examContainer");
     container.innerHTML = sheet.texts.map(block => {

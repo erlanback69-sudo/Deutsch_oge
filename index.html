@@ -525,6 +525,7 @@
   <button onclick="switchTab('exam', this)">Вариант ОГЭ (тексты)</button>
   <button onclick="switchTab('cards', this)">🃏 Карточки (свайпы)</button>
   <button onclick="switchTab('readingAloud', this)">📖 Чтение вслух</button>
+  <button onclick="switchTab('letter', this)">✉️ Письмо (35)</button>
 </nav>
 
 <main>
@@ -1007,6 +1008,40 @@
     </div>
     <div id="recordingsList"></div>
     </div>
+</section>
+  <!-- ВКЛАДКА 8: ТРЕНАЖЁР ЭЛЕКТРОННОГО ПИСЬМА (ЗАДАНИЕ 35 ОГЭ) -->
+<section id="letter" class="tab-section">
+  <div class="topic-filters" id="letterTopicBtns"></div>
+
+  <div id="letterTaskBox"></div>
+
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+      <strong>Твой ответ (норма ОГЭ: 100–120 слов):</strong>
+      <span id="letterWordCounter" style="font-weight: 700; padding: 4px 10px; border-radius: 8px; background: var(--border);">0 слов (допуск: 90–132)</span>
+    </div>
+
+    <div class="exam-umlauts" style="position: static; margin-bottom: 10px;">
+      <span style="font-size: 0.85rem; color: var(--muted);">Вставить:</span>
+      <button type="button" class="umlaut-btn" onclick="insertLetterChar('ä')">ä</button>
+      <button type="button" class="umlaut-btn" onclick="insertLetterChar('ö')">ö</button>
+      <button type="button" class="umlaut-btn" onclick="insertLetterChar('ü')">ü</button>
+      <button type="button" class="umlaut-btn" onclick="insertLetterChar('ß')">ß</button>
+      <button type="button" class="umlaut-btn" onclick="insertLetterChar('Ä')">Ä</button>
+      <button type="button" class="umlaut-btn" onclick="insertLetterChar('Ö')">Ö</button>
+      <button type="button" class="umlaut-btn" onclick="insertLetterChar('Ü')">Ü</button>
+    </div>
+
+    <textarea id="letterInput" rows="12" oninput="updateLetterWordCount()" placeholder="Lieber Tim,&#10;&#10;vielen Dank für deine E-Mail..." style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); font-size: 1rem; line-height: 1.6; font-family: inherit; resize: vertical; box-sizing: border-box;"></textarea>
+
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
+      <button type="button" class="btn-exam-submit" style="flex: 2; margin-top: 0;" onclick="checkLetter()">🔍 Проверить письмо</button>
+      <button type="button" class="topic-btn" style="flex: 1;" onclick="copyLetterForAI()">🤖 Для ИИ-эксперта</button>
+      <button type="button" class="topic-btn" style="flex: 1;" onclick="clearLetterInput()">🗑 Очистить</button>
+    </div>
+  </div>
+
+  <div id="letterCheckResult"></div>
 </section>
 </main>
 <script>
@@ -3994,6 +4029,251 @@ function renderRecordingsList() {
 }
 
 renderRecordingsList();
+  // === ВКЛАДКА 8: ТРЕНАЖЁР ЭЛЕКТРОННОГО ПИСЬМА (БЛОК 1) ===
+const fipiLetters = [
+  {
+    topic: "1. Школа",
+    from: "Tim@mail.de",
+    subject: "Schule",
+    text: "Lieber Freund / Liebe Freundin,\n\nich freue mich sehr über deine E-Mail! Bei mir läuft in der Schule alles gut, aber ich habe jetzt ziemlich viele Hausaufgaben. Welche Schulfächer magst du besonders gern und warum? Wie viel Zeit verbringst du täglich mit den Hausaufgaben? Was machst du gewöhnlich nach dem Unterricht?\n\nSchreib mir bald!\n\nViele Grüße\nTim",
+    sample: "Lieber Tim,\n\nvielen Dank für deine E-Mail. Ich habe mich sehr gefreut, wieder von dir zu hören.\n\nIn deinem Brief fragst du mich nach meinem Schulalltag. Meine Lieblingsfächer sind Deutsch und Geschichte, weil ich sie sehr interessant und spannend finde. Für meine Hausaufgaben brauche ich gewöhnlich etwa zwei Stunden pro Tag. Nach dem Unterricht gehe ich oft im Park spazieren, treibe Sport oder treffe mich mit meinen Freunden.\n\nSchreib mir bald wieder!\n\nViele Grüße\nAlex"
+  },
+  {
+    topic: "2. Свободное время",
+    from: "Anna@mail.de",
+    subject: "Freizeit",
+    text: "Lieber Freund / Liebe Freundin,\n\ndanke für deine Nachricht! Am Wochenende war ich mit meiner Familie im Kino und wir haben einen tollen Film gesehen. Was machst du gern in deiner Freizeit? Wie verbringst du gewöhnlich dein Wochenende? Welches Hobby möchtest du noch ausprobieren?\n\nAlles Gute!\n\nDeine Anna",
+    sample: "Liebe Anna,\n\nvielen Dank für deine nette E-Mail. Es ist schön, wieder etwas von dir zu hören.\n\nGerne beantworte ich deine Fragen über meine Freizeit. In meiner Freizeit lese ich sehr gern spannende Bücher oder höre Musik. Am Wochenende schlafe ich meistens lange aus, helfe meinen Eltern im Haushalt und gehe mit Freunden ins Café. Außerdem möchte ich in Zukunft Gitarre spielen lernen, weil mir Musik viel Spaß macht.\n\nSchreib mir bald!\n\nViele Grüße\nAlex"
+  },
+  {
+    topic: "3. Спорт и здоровье",
+    from: "Lukas@mail.de",
+    subject: "Sport",
+    text: "Lieber Freund / Liebe Freundin,\n\nich hoffe, es geht dir gut! Ich habe vor Kurzem angefangen, zweimal pro Woche schwimmen zu gehen, und es macht mir riesigen Spaß. Treibst du Sport und welche Sportart findest du am besten? Warum ist Sport für Jugendliche wichtig? Was machst du noch, um fit und gesund zu bleiben?\n\nBis bald!\n\nDein Lukas",
+    sample: "Lieber Lukas,\n\ndanke für deine E-Mail. Ich habe mich sehr über deine Nachricht gefreut.\n\nDu fragst mich nach Sport und Gesundheit. Ich treibe regelmäßig Sport und spiele am liebsten Volleyball, weil das ein tolles Mannschaftsspiel ist. Meiner Meinung nach ist Sport für Jugendliche sehr wichtig, denn er stärkt die Gesundheit und hilft gegen Stress in der Schule. Um fit zu bleiben, esse ich auch viel Obst und Gemüse und gehe oft an der frischen Luft spazieren.\n\nMelde dich bald wieder!\n\nViele Grüße\nAlex"
+  },
+  {
+    topic: "4. Каникулы",
+    from: "Mia@mail.de",
+    subject: "Ferien",
+    text: "Lieber Freund / Liebe Freundin,\n\nendlich haben bei uns die Ferien begonnen! Nächste Woche fahre ich mit meinen Eltern ans Meer. Wo verbringst du deine Sommerferien am liebsten? Mit wem reist du gewöhnlich? Welche Orte in deinem Land möchtest du unbedingt besuchen?\n\nViele Grüße\nMia",
+    sample: "Liebe Mia,\n\nvielen Dank für deine E-Mail. Ich wünsche dir schon jetzt wunderschöne Ferien am Meer!\n\nGerne erzähle ich dir von meinen Urlaubsplänen. Meine Sommerferien verbringe ich am liebsten auf dem Land bei meinen Großeltern, weil dort die Natur sehr schön ist. Gewöhnlich reise ich mit meinen Eltern und meiner Schwester. In Russland möchte ich unbedingt den Baikalsee und Sankt Petersburg besuchen, denn dort gibt es viele Sehenswürdigkeiten.\n\nSchreib mir bald!\n\nHerzliche Grüße\nAlex"
+  }
+];
+
+let currentLetterIndex = 0;
+
+function countFipiWords(text) {
+  const cleaned = text.trim();
+  if (!cleaned) return 0;
+  return cleaned.split(/\s+/).filter(t => /[A-Za-zÄÖÜäöüß0-9]/.test(t)).length;
+}
+
+function updateLetterWordCount() {
+  const inp = document.getElementById("letterInput");
+  const counter = document.getElementById("letterWordCounter");
+  if (!inp || !counter) return;
+  const count = countFipiWords(inp.value);
+  counter.textContent = count + " слов (норма: 100–120, допуск: 90–132)";
+  if (count === 0) {
+    counter.style.background = "var(--border)";
+    counter.style.color = "var(--text)";
+  } else if (count < 90 || count > 132) {
+    counter.style.background = "#fee2e2";
+    counter.style.color = "#991b1b";
+  } else if (count >= 100 && count <= 120) {
+    counter.style.background = "#dcfce7";
+    counter.style.color = "#166534";
+  } else {
+    counter.style.background = "#fef3c7";
+    counter.style.color = "#92400e";
+  }
+}
+// === ВКЛАДКА 8: ТРЕНАЖЁР ЭЛЕКТРОННОГО ПИСЬМА (БЛОК 2) ===
+function insertLetterChar(char) {
+  const inp = document.getElementById("letterInput");
+  if (!inp) return;
+  const start = inp.selectionStart || 0;
+  const end = inp.selectionEnd || 0;
+  inp.value = inp.value.slice(0, start) + char + inp.value.slice(end);
+  inp.focus();
+  inp.selectionStart = inp.selectionEnd = start + char.length;
+  updateLetterWordCount();
+}
+
+function clearLetterInput() {
+  const inp = document.getElementById("letterInput");
+  const res = document.getElementById("letterCheckResult");
+  if (inp) inp.value = "";
+  if (res) res.innerHTML = "";
+  updateLetterWordCount();
+}
+
+function selectLetterTopic(idx) {
+  currentLetterIndex = idx;
+  const res = document.getElementById("letterCheckResult");
+  if (res) res.innerHTML = "";
+  renderLetterTrainer();
+}
+
+function renderLetterTrainer() {
+  const btnsBox = document.getElementById("letterTopicBtns");
+  const taskBox = document.getElementById("letterTaskBox");
+  if (!btnsBox || !taskBox) return;
+
+  btnsBox.innerHTML = fipiLetters.map((item, i) =>
+    '<button type="button" class="topic-btn ' + (i === currentLetterIndex ? 'active' : '') + '" onclick="selectLetterTopic(' + i + ')">' + escapeHtml(item.topic) + '</button>'
+  ).join("");
+
+  const item = fipiLetters[currentLetterIndex];
+  const friendName = item.from.split("@")[0];
+  taskBox.innerHTML =
+    '<div class="card" style="border-left: 5px solid var(--primary);">' +
+      '<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 6px;">' +
+        '<strong>From:</strong> ' + escapeHtml(item.from) + ' &nbsp;|&nbsp; <strong>Subject:</strong> ' + escapeHtml(item.subject) +
+      '</div>' +
+      '<div style="white-space: pre-line; line-height: 1.65; background: var(--bg, #f8fafc); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">' + escapeHtml(item.text) + '</div>' +
+      '<p style="font-size: 0.85rem; color: var(--muted); margin-top: 8px;">Write a message to ' + escapeHtml(friendName) + ' and answer his/her 3 questions. Write 100–120 words. Remember the rules of letter writing.</p>' +
+    '</div>';
+  updateLetterWordCount();
+}
+// === ВКЛАДКА 8: ТРЕНАЖЁР ЭЛЕКТРОННОГО ПИСЬМА (БЛОК 3) ===
+function checkLetter() {
+  const inp = document.getElementById("letterInput");
+  const resBox = document.getElementById("letterCheckResult");
+  if (!inp || !resBox) return;
+
+  const raw = inp.value.trim();
+  if (!raw) {
+    resBox.innerHTML = '<div class="card" style="border-left: 5px solid var(--red);">Напиши сначала текст письма в поле выше!</div>';
+    return;
+  }
+
+  const words = countFipiWords(raw);
+  const lines = raw.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  const issues = [];
+  const good = [];
+
+  if (words < 90) {
+    issues.push('❌ <strong>Объём (' + words + ' слов):</strong> меньше минимума (90 слов) — на ОГЭ ставится 0 баллов. Добавь ещё ' + (90 - words) + ' слов.');
+  } else if (words > 132) {
+    issues.push('⚠️ <strong>Объём (' + words + ' слов):</strong> больше 132 слов! На ОГЭ отсчитают первые 120 слов и отрежут концовку. Сократи на ' + (words - 120) + ' слов.');
+  } else if (words >= 100 && words <= 120) {
+    good.push('✅ <strong>Идеальный объём:</strong> ' + words + ' слов (норма 100–120).');
+  } else {
+    good.push('✅ <strong>Допустимый объём:</strong> ' + words + ' слов (в пределах 90–132).');
+  }
+
+  const firstLine = lines || "";
+  if (/^(Lieber|Liebe|Hallo)\s+[A-ZÄÖÜ][a-zäöüß]+[,!]?$/i.test(firstLine)) {
+    if (!firstLine.endsWith(",")) {
+      issues.push('⚠️ <strong>Обращение:</strong> после имени ставится запятая (<code>Lieber Tim,</code>).');
+    } else {
+      good.push('✅ <strong>Обращение:</strong> оформлено верно с запятой.');
+    }
+    const secondLine = lines || "";
+    if (secondLine && /^[A-ZÄÖÜ]/.test(secondLine) && !/^(Ich|Du|Er|Sie|Es|Wir|Ihr|Sie|In|Am|Im|Dein|Deine|Lieber|Liebe)\b/.test(secondLine)) {
+      issues.push('⚠️ <strong>Первое слово после обращения:</strong> после запятой следующий абзац начинается <strong>с маленькой буквы</strong> (<code>vielen Dank...</code>).');
+    }
+  } else {
+    issues.push('❌ <strong>Обращение:</strong> не найдено на первой строке (пример: <code>Lieber Tim,</code>).');
+  }
+
+  if (/(danke|vielen dank|herzlichen dank|freue mich|gefreut)/i.test(raw)) {
+    good.push('✅ <strong>Благодарность за письмо:</strong> присутствует.');
+  } else {
+    issues.push('❌ <strong>Благодарность:</strong> добавь благодарность (например: <code>Vielen Dank für deine E-Mail.</code>).');
+  }
+
+  if (/(schreib mir|melde dich|bis bald|antworte mir|von dir zu hören)/i.test(raw)) {
+    good.push('✅ <strong>Надежда на будущие контакты:</strong> присутствует.');
+  } else {
+    issues.push('⚠️ <strong>Будущие контакты:</strong> добавь фразу на отдельной строке (<code>Schreib mir bald!</code>).');
+  }
+
+  const lastLine = lines[lines.length - 1] || "";
+  const prevLine = lines[lines.length - 2] || "";
+  if (/^(Viele Grüße|Liebe Grüße|Herzliche Grüße|Beste Grüße|Alles Gute|Dein|Deine)[,!]?$/i.test(prevLine)) {
+    good.push('✅ <strong>Завершающая фраза:</strong> на отдельной строке.');
+    if (lastLine.endsWith(".")) {
+      issues.push('❌ <strong>Подпись:</strong> после имени <strong>точка НЕ ставится</strong>!');
+    } else if (/^[A-ZÄÖÜ][a-zäöüß]+$/.test(lastLine)) {
+      good.push('✅ <strong>Подпись:</strong> имя без точки — верно.');
+    }
+  } else {
+    issues.push('❌ <strong>Завершение и подпись:</strong> в конце нужны 2 отдельные строки без точки (<code>Viele Grüße</code> и имя).');
+  }
+
+  if (/\b(weil|dass|wenn|obwohl|damit|als)\b[^.!?]*\b(ist|sind|war|waren|habe|hat|haben|bin|bist|wird|werden|kann|muss|will|mag|soll)\s+[a-zäöüß]+/i.test(raw)) {
+    issues.push('⚠️ <strong>Порядок слов:</strong> после союзов <code>weil / dass / wenn / obwohl</code> глагол должен стоять в самом конце придаточного!');
+  }
+
+  if (/\b(habe|hast|hat|haben|habt)\s+(gegangen|gefahren|geflogen|gekommen|geblieben|gestanden|aufgestanden|eingeschlafen|gewesen|geworden)\b/i.test(raw)) {
+    issues.push('❌ <strong>Время Perfekt:</strong> глаголы движения и смены состояния (<em>gehen, fahren, kommen, bleiben, sein</em>) требуют <strong>sein</strong> (<code>ich bin gegangen</code>), а не <em>haben</em>!');
+  }
+
+  if (/\b(mit|nach|aus|zu|von|bei)\s+(mein|dein|sein|ihr|unser|ein|kein)\s+[A-ZÄÖÜ]/g.test(raw)) {
+    issues.push('⚠️ <strong>Падеж (Dativ):</strong> после <code>mit, nach, aus, zu, von, bei</code> нужны окончания Dativ (<code>mit meinem Freund</code>, <code>mit meiner Mutter</code>).');
+  }
+
+  if (/\bfür\s+(mir|dir|ihm|ihr|uns|euch)\b/i.test(raw)) {
+    issues.push('❌ <strong>Падеж (Akkusativ):</strong> после <code>für</code> ставится Akkusativ (<code>für mich</code>, <code>für dich</code>).');
+  }
+
+  if (/[a-zäöüß0-9]\s+(weil|dass|obwohl|damit|denn|aber|sondern)\b/.test(raw)) {
+    issues.push('⚠️ <strong>Пунктуация:</strong> перед <code>weil, dass, obwohl, damit, denn, aber, sondern</code> всегда ставится запятая!');
+  }
+
+  if (/\s+Ich\b/.test(raw.replace(/[.!?]\s+Ich\b/g, ""))) {
+    issues.push('⚠️ <strong>Орфография:</strong> <code>ich</code> (я) в середине предложения пишется с маленькой буквы.');
+  }
+
+  const sample = fipiLetters[currentLetterIndex].sample;
+  const borderCol = issues.length === 0 ? "var(--green, #2e7d32)" : "var(--accent, #f59e0b)";
+  const goodHtml = good.length ? '<ul style="padding-left: 18px; margin-bottom: 10px;">' + good.map(g => '<li style="margin-bottom: 4px;">' + g + '</li>').join("") + '</ul>' : "";
+  const issuesHtml = issues.length ? '<h4 style="color: var(--red); margin-bottom: 6px;">Найдено замечаний (' + issues.length + '):</h4><ul style="padding-left: 18px; margin-bottom: 12px;">' + issues.map(i => '<li style="margin-bottom: 6px;">' + i + '</li>').join("") + '</ul>' : '<p style="color: var(--green, #2e7d32); font-weight: 700; margin-bottom: 12px;">Отлично! Грубых ошибок структуры и грамматики не найдено.</p>';
+
+  resBox.innerHTML =
+    '<div class="card" style="border-left: 5px solid ' + borderCol + ';">' +
+      '<h3 style="margin-bottom: 10px;">📊 Результат экспресс-проверки</h3>' +
+      goodHtml +
+      issuesHtml +
+      '<details class="rule-item">' +
+        '<summary>💡 Посмотреть эталонный ответ (на 10 баллов ФИПИ)</summary>' +
+        '<div class="rule-body" style="white-space: pre-line; line-height: 1.6;">' + escapeHtml(sample) + '</div>' +
+      '</details>' +
+    '</div>';
+}
+
+function copyLetterForAI() {
+  const inp = document.getElementById("letterInput");
+  const userText = inp ? inp.value.trim() : "";
+  if (!userText) {
+    alert("Сначала напиши свой вариант письма в поле выше!");
+    return;
+  }
+  const item = fipiLetters[currentLetterIndex];
+  const words = countFipiWords(userText);
+  const promptText =
+    "Проверь моё электронное письмо формата Задания 35 ОГЭ по немецкому языку по критериям ФИПИ (максимум 10 баллов: К1 Решение коммуникативной задачи 0-3, К2 Организация текста 0-2, К3 Лексико-грамматическое оформление 0-3, К4 Орфография и пунктуация 0-2).\n\n" +
+    "=== ЗАДАНИЕ (ПИСЬМО ДРУГА) ===\n" + item.text + "\n\n" +
+    "=== МОЙ ОТВЕТ (" + words + " слов) ===\n" + userText + "\n\n" +
+    "Пожалуйста:\n" +
+    "1. Посчитай точное количество слов по правилам ФИПИ (норма 100-120, допуск 90-132).\n" +
+    "2. Проверь, даны ли полные и точные ответы на все 3 вопроса друга.\n" +
+    "3. Выпиши все грамматические, лексические, синтаксические (порядок слов, времена) и орфографические ошибки с исправлением и объяснением.\n" +
+    "4. Выставь итоговый балл по каждому критерию (К1-К4) и дай исправленный вариант моего письма.";
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(promptText).then(() => {
+      alert("✅ Готовый запрос с заданием и твоим письмом скопирован! Вставь его в любой чат с нейросетью.");
+    }).catch(() => {
+      alert("Не удалось скопировать автоматически. Выдели текст вручную.");
+    });
+  }
+}
+
+renderLetterTrainer();
   buildFcQueue();
 </script>
 </body>

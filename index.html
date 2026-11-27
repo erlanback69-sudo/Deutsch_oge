@@ -990,7 +990,11 @@
   
   <!-- ВКЛАДКА 7: ЧТЕНИЕ ВСЛУХ (ЗАДАНИЕ 1 УСТНОЙ ЧАСТИ) -->
 <section id="readingAloud" class="tab-section">
-  <div class="topic-filters" id="raTextBtns"></div>
+  <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+    <button type="button" class="topic-btn" onclick="changeRaText(-1)">⬅️</button>
+    <select id="raTextSelect" onchange="selectRaText(Number(this.value))" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); font-size: 0.95rem;"></select>
+    <button type="button" class="topic-btn" onclick="changeRaText(1)">➡️</button>
+  </div>
 
   <div class="card" style="text-align: center; border-left: 5px solid var(--primary);">
     <div id="raTimerLabel" style="font-size: 0.9rem; color: var(--muted); margin-bottom: 4px;">Задание 1 ОГЭ: Чтение текста вслух</div>
@@ -1016,7 +1020,11 @@
 </section>
   <!-- ВКЛАДКА 8: ТРЕНАЖЁР ЭЛЕКТРОННОГО ПИСЬМА (ЗАДАНИЕ 35 ОГЭ) -->
 <section id="letter" class="tab-section">
-  <div class="topic-filters" id="letterTopicBtns"></div>
+  <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+    <button type="button" class="topic-btn" onclick="changeLetterTopic(-1)">⬅️</button>
+    <select id="letterTopicSelect" onchange="selectLetterTopic(Number(this.value))" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); font-size: 0.95rem;"></select>
+    <button type="button" class="topic-btn" onclick="changeLetterTopic(1)">➡️</button>
+  </div>
 
   <div id="letterTaskBox"></div>
 
@@ -4211,6 +4219,13 @@ function stopRaSpeech() {
   }
 }
 
+function changeRaText(step) {
+  const next = currentRaIndex + step;
+  if (next >= 0 && next < readingAloudTexts.length) {
+    selectRaText(next);
+  }
+}
+
 function selectRaText(idx) {
   stopRaSpeech();
   currentRaIndex = idx;
@@ -4218,33 +4233,32 @@ function selectRaText(idx) {
 }
 
 function renderReadingAloud() {
-  const btnsBox = document.getElementById("raTextBtns");
+  const sel = document.getElementById("raTextSelect");
   const container = document.getElementById("raContainer");
-  if (!btnsBox || !container) return;
+  if (!sel || !container) return;
 
-  btnsBox.innerHTML = readingAloudTexts.map((item, i) =>
-    `<button type="button" class="topic-btn ${i === currentRaIndex ? "active" : ""}" onclick="selectRaText(${i})">Текст ${i + 1}</button>`
+  sel.innerHTML = readingAloudTexts.map((item, i) =>
+    '<option value="' + i + '" ' + (i === currentRaIndex ? 'selected' : '') + '>' +
+      escapeHtml(item.title) + ' (' + (i + 1) + ' из ' + readingAloudTexts.length + ')' +
+    '</option>'
   ).join("");
 
   const item = readingAloudTexts[currentRaIndex];
-  const tipsHtml = item.tips.map(t => `<li>${escapeHtml(t)}</li>`).join("");
+  const tipsHtml = item.tips.map(t => '<li>' + escapeHtml(t) + '</li>').join("");
 
-  container.innerHTML = `
-    <div class="card">
-      <h3 style="margin-bottom: 12px; color: var(--primary);">${escapeHtml(item.title)}</h3>
-      <p style="font-size: 1.15rem; line-height: 1.85; margin-bottom: 16px;">${escapeHtml(item.text)}</p>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
-        <button type="button" class="topic-btn" onclick="speakRaText()">🔊 Прослушать эталон</button>
-        <button type="button" class="topic-btn" onclick="stopRaSpeech()">⏹ Стоп озвучки</button>
-      </div>
-      <details class="rule-item">
-        <summary>💡 Подсказки: как читать числительные и сложные слова</summary>
-        <div class="rule-body">
-          <ul>${tipsHtml}</ul>
-        </div>
-      </details>
-    </div>
-  `;
+  container.innerHTML =
+    '<div class="card">' +
+      '<h3 style="margin-bottom: 12px; color: var(--primary);">' + escapeHtml(item.title) + '</h3>' +
+      '<p style="font-size: 1.15rem; line-height: 1.85; margin-bottom: 16px;">' + escapeHtml(item.text) + '</p>' +
+      '<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">' +
+        '<button type="button" class="topic-btn" onclick="speakRaText()">🔊 Прослушать эталон</button>' +
+        '<button type="button" class="topic-btn" onclick="stopRaSpeech()">⏹ Стоп озвучки</button>' +
+      '</div>' +
+      '<details class="rule-item">' +
+        '<summary>💡 Подсказки: как читать числительные и сложные слова</summary>' +
+        '<div class="rule-body"><ul>' + tipsHtml + '</ul></div>' +
+      '</details>' +
+    '</div>';
 }
 
 renderReadingAloud();
@@ -4518,6 +4532,13 @@ function clearLetterInput() {
   updateLetterWordCount();
 }
 
+function changeLetterTopic(step) {
+  const next = currentLetterIndex + step;
+  if (next >= 0 && next < fipiLetters.length) {
+    selectLetterTopic(next);
+  }
+}
+
 function selectLetterTopic(idx) {
   currentLetterIndex = idx;
   const res = document.getElementById("letterCheckResult");
@@ -4526,12 +4547,14 @@ function selectLetterTopic(idx) {
 }
 
 function renderLetterTrainer() {
-  const btnsBox = document.getElementById("letterTopicBtns");
+  const sel = document.getElementById("letterTopicSelect");
   const taskBox = document.getElementById("letterTaskBox");
-  if (!btnsBox || !taskBox) return;
+  if (!sel || !taskBox) return;
 
-  btnsBox.innerHTML = fipiLetters.map((item, i) =>
-    '<button type="button" class="topic-btn ' + (i === currentLetterIndex ? 'active' : '') + '" onclick="selectLetterTopic(' + i + ')">' + escapeHtml(item.topic) + '</button>'
+  sel.innerHTML = fipiLetters.map((item, i) =>
+    '<option value="' + i + '" ' + (i === currentLetterIndex ? 'selected' : '') + '>' +
+      escapeHtml(item.topic) + ' (' + (i + 1) + ' из ' + fipiLetters.length + ')' +
+    '</option>'
   ).join("");
 
   const item = fipiLetters[currentLetterIndex];

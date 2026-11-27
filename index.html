@@ -3635,8 +3635,175 @@ let fcUnlearned = loadStorageArray("deutsch_oge_unlearned");
       else if (diff < -55) swipeCard("left");
     }, { passive: true });
   }
-</section>
+// === ВКЛАДКА 7: ЧТЕНИЕ ВСЛУХ (ЗАДАНИЕ 1 ОГЭ) ===
+const readingAloudTexts = [
+  {
+    title: "Текст 1: Берлин (Berlin)",
+    text: "Berlin ist die Hauptstadt von Deutschland und hat heute etwa 3,7 Millionen Einwohner. Die Stadt liegt im Nordosten des Landes an den Flüssen Spree und Havel. Im Jahr 1961 wurde die Berliner Mauer gebaut, die die Stadt 28 Jahre lang in zwei Teile trennte. Erst am 9. November 1989 fiel die Mauer, und Deutschland wurde wieder vereint. Heute ist Berlin ein wichtiges Zentrum für Politik, Kultur und Wissenschaft. Jedes Jahr besuchen mehr als 13 Millionen Touristen aus der ganzen Welt berühmte Sehenswürdigkeiten wie das Brandenburger Tor oder den Reichstag.",
+    tips: [
+      "3,7 Millionen — drei Komma sieben Millionen",
+      "Im Jahr 1961 — im Jahr neunzehnhunderteinundsechzig (годы до 2000 читаются сотнями!)",
+      "28 Jahre — achtundzwanzig Jahre",
+      "am 9. November 1989 — am neunten November neunzehnhundertneunundachtzig",
+      "13 Millionen — dreizehn Millionen"
+    ]
+  },
+  {
+    title: "Текст 2: Велосипед (Das Fahrrad)",
+    text: "Das Fahrrad gehört zu den beliebtesten Verkehrsmitteln in Deutschland. Schon im Jahr 1817 erfand Karl Drais in Mannheim eine Laufmaschine aus Holz, die als Vorläufer des modernen Fahrrads gilt. Heute gibt es in Deutschland über 80 Millionen Fahrräder, also fast ein Rad pro Einwohner. Viele Schüler und Erwachsene fahren jeden Tag mit dem Rad zur Schule oder zur Arbeit. Das spart nicht nur Geld, sondern schützt auch die Umwelt vor Abgasen. Außerdem bleibt man durch regelmäßiges Radfahren fit und gesund.",
+    tips: [
+      "Im Jahr 1817 — im Jahr achtzehnhundertsiebzehn",
+      "Vorläufer — ударение на первый слог [ˈfoːɐ̯lɔɪ̯fɐ] (äu читается как «ой»)",
+      "über 80 Millionen — über achtzig Millionen",
+      "regelmäßiges — ударение на первый слог [ˈʁeːɡl̩ˌmɛːsɪɡəs]"
+    ]
+  },
+  {
+    title: "Текст 3: Книги и чтение (Bücher)",
+    text: "Obwohl digitale Medien immer wichtiger werden, lesen viele Jugendliche in Deutschland noch sehr gerne gedruckte Bücher. Etwa 45 Prozent der Schüler zwischen 12 und 19 Jahren greifen mehrmals pro Woche zu einem Buch. Besonders beliebt sind spannende Krimis, Fantasy-Romane und Sachbücher über Natur oder Technik. Seit 1949 findet jeden Oktober die Frankfurter Buchmesse statt. Sie ist die größte Buchmesse der Welt und zieht rund 280.000 Besucher aus über 100 Ländern an.",
+    tips: [
+      "Etwa 45 Prozent — etwa fünfundvierzig Prozent",
+      "zwischen 12 und 19 Jahren — zwischen zwölf und neunzehn Jahren",
+      "Seit 1949 — seit neunzehnhundertneunundvierzig",
+      "280.000 Besucher — zweihundertachtzigtausend Besucher",
+      "aus über 100 Ländern — aus über hundert Ländern"
+    ]
+  },
+  {
+    title: "Текст 4: Школьный обмен (Schüleraustausch)",
+    text: "Ein Schüleraustausch ist eine wunderbare Möglichkeit, eine Fremdsprache direkt im Alltag zu üben. Jedes Jahr nehmen mehr als 15.000 deutsche Jugendliche an solchen Programmen teil. Meistens wohnen die Schüler für zwei bis zehn Monate bei einer Gastfamilie im Ausland und besuchen dort eine normale Schule. Am Anfang fällt das Sprechen oft noch schwer, aber schon nach wenigen Wochen versteht man fast alles. Außerdem schließt man Freundschaften, die oft ein ganzes Leben lang halten.",
+    tips: [
+      "Schüleraustausch — длинное слово: Schüler + Austausch (ударение на первый слог)",
+      "15.000 — fünfzehntausend",
+      "zwei bis zehn Monate — четкая пауза перед «aber»",
+      "Freundschaften — [ˈfʁɔɪ̯ntʃaftn̩] (eu читается как «ой»)"
+    ]
+  },
+  {
+    title: "Текст 5: Экология (Umweltschutz)",
+    text: "Der Schutz unserer Umwelt spielt heute eine entscheidende Rolle für die Zukunft der Erde. In vielen deutschen Haushalten wird der Müll schon seit über 30 Jahren streng getrennt. Papier, Glas, Plastik und Biomüll kommen in verschiedene Tonnen, damit sie recycelt werden können. Auch in den Schulen lernen Kinder bereits ab der 1. Klasse, wie man Energie und Wasser spart. Wenn jeder Mensch im Alltag kleine Schritte macht, können wir zusammen sehr viel für die Natur erreichen.",
+    tips: [
+      "entscheidende — [ɛntˈʃaɪ̯dn̩də] (ei читается как «ай»)",
+      "seit über 30 Jahren — seit über dreißig Jahren",
+      "recycelt — читается на английский манер [ʁiˈsaɪ̯kl̩t]",
+      "ab der 1. Klasse — ab der ersten Klasse (порядковое числительное!)"
+    ]
+  }
+];
 
+let currentRaIndex = 0;
+let raTimerInterval = null;
+let raSecondsLeft = 90;
+let raIsPaused = false;
+
+function formatRaTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, "0");
+  const s = String(sec % 60).padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+function updateRaDisplay() {
+  const el = document.getElementById("raTimerDisplay");
+  if (!el) return;
+  el.textContent = formatRaTime(raSecondsLeft);
+  el.style.color = raSecondsLeft <= 15 ? "var(--red)" : "var(--primary)";
+}
+
+function startRaTimer(seconds, labelText) {
+  clearInterval(raTimerInterval);
+  raSecondsLeft = seconds;
+  raIsPaused = false;
+  const lbl = document.getElementById("raTimerLabel");
+  const pauseBtn = document.getElementById("raPauseBtn");
+  if (lbl) lbl.textContent = labelText;
+  if (pauseBtn) pauseBtn.textContent = "⏸ Пауза";
+  updateRaDisplay();
+
+  raTimerInterval = setInterval(() => {
+    if (!raIsPaused && raSecondsLeft > 0) {
+      raSecondsLeft--;
+      updateRaDisplay();
+      if (raSecondsLeft === 0) {
+        clearInterval(raTimerInterval);
+        if (lbl) lbl.textContent = "⏰ Время вышло!";
+      }
+    }
+  }, 1000);
+}
+
+function toggleRaPause() {
+  if (raSecondsLeft <= 0) return;
+  raIsPaused = !raIsPaused;
+  const pauseBtn = document.getElementById("raPauseBtn");
+  if (pauseBtn) pauseBtn.textContent = raIsPaused ? "▶ Продолжить" : "⏸ Пауза";
+}
+
+function resetRaTimer() {
+  clearInterval(raTimerInterval);
+  raSecondsLeft = 90;
+  raIsPaused = false;
+  const lbl = document.getElementById("raTimerLabel");
+  const pauseBtn = document.getElementById("raPauseBtn");
+  if (lbl) lbl.textContent = "Задание 1 ОГЭ: Чтение текста вслух";
+  if (pauseBtn) pauseBtn.textContent = "⏸ Пауза";
+  updateRaDisplay();
+}
+
+function speakRaText() {
+  if (!("speechSynthesis" in window)) {
+    alert("Ваш браузер не поддерживает озвучку текста.");
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(readingAloudTexts[currentRaIndex].text);
+  utter.lang = "de-DE";
+  utter.rate = 0.9;
+  window.speechSynthesis.speak(utter);
+}
+
+function stopRaSpeech() {
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function selectRaText(idx) {
+  stopRaSpeech();
+  currentRaIndex = idx;
+  renderReadingAloud();
+}
+
+function renderReadingAloud() {
+  const btnsBox = document.getElementById("raTextBtns");
+  const container = document.getElementById("raContainer");
+  if (!btnsBox || !container) return;
+
+  btnsBox.innerHTML = readingAloudTexts.map((item, i) =>
+    `<button type="button" class="topic-btn ${i === currentRaIndex ? "active" : ""}" onclick="selectRaText(${i})">Текст ${i + 1}</button>`
+  ).join("");
+
+  const item = readingAloudTexts[currentRaIndex];
+  const tipsHtml = item.tips.map(t => `<li>${escapeHtml(t)}</li>`).join("");
+
+  container.innerHTML = `
+    <div class="card">
+      <h3 style="margin-bottom: 12px; color: var(--primary);">${escapeHtml(item.title)}</h3>
+      <p style="font-size: 1.15rem; line-height: 1.85; margin-bottom: 16px;">${escapeHtml(item.text)}</p>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+        <button type="button" class="topic-btn" onclick="speakRaText()">🔊 Прослушать эталон</button>
+        <button type="button" class="topic-btn" onclick="stopRaSpeech()">⏹ Стоп озвучки</button>
+      </div>
+      <details class="rule-item">
+        <summary>💡 Подсказки: как читать числительные и сложные слова</summary>
+        <div class="rule-body">
+          <ul>${tipsHtml}</ul>
+        </div>
+      </details>
+    </div>
+  `;
+}
+
+renderReadingAloud();
   buildFcQueue();
 </script>
 </body>

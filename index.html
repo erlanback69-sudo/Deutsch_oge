@@ -545,6 +545,13 @@
       <div class="topic-filters" id="topicFilters" style="margin-bottom: 0;"></div>
       <button type="button" class="btn-toggle-tr" id="toggleTrBtn" onclick="toggleTranslations()">🙈 Скрыть перевод</button>
     </div>
+        <div class="card" style="padding: 12px; margin-bottom: 14px;">
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <input type="text" id="vocabSearchInput" oninput="renderVocab(currentTopic)" placeholder="🔍 Поиск слова (на немецком или русском)..." style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.95rem;">
+      <button type="button" class="topic-btn" style="padding: 8px 12px;" onclick="clearVocabSearch()">✕</button>
+    </div>
+    <div id="vocabCountLabel" style="font-size: 0.85rem; color: var(--muted); margin-top: 6px;"></div>
+        </div>
     <div class="word-grid" id="vocabGrid"></div>
     </section>
 
@@ -2932,24 +2939,61 @@
     el.classList.remove("hidden-tr");
   }
 
-  function renderVocab(selectedTopic = "Все") {
-    currentTopic = selectedTopic;
-    const topics = ["Все", ...new Set(vocabulary.map(v => v.topic))];
-    const filterBox = document.getElementById("topicFilters");
-    filterBox.innerHTML = topics.map(t => `
-      <button class="topic-btn ${t === selectedTopic ? "active" : ""}" onclick="renderVocab('${t}')">${t}</button>
-    `).join("");
+  function normalizeDe(str) {
+  return String(str).toLowerCase()
+    .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss");
+}
 
-    const grid = document.getElementById("vocabGrid");
-    const filtered = selectedTopic === "Все" ? vocabulary : vocabulary.filter(v => v.topic === selectedTopic);
-    grid.innerHTML = filtered.map(item => `
-      <div class="word-card">
-        <div class="word-de">${item.de}</div>
-        <div class="word-ru ${hideTranslations ? "hidden-tr" : ""}" onclick="revealOne(this)">${item.ru}</div>
-        <div class="word-ex">${item.ex}</div>
-      </div>
-    `).join("");
+function clearVocabSearch() {
+  const inp = document.getElementById("vocabSearchInput");
+  if (!inp) return;
+  inp.value = "";
+  renderVocab(currentTopic);
+}
+
+function renderVocab(selectedTopic = "Все") {
+  currentTopic = selectedTopic;
+  const topics = ["Все", ...new Set(vocabulary.map(v => v.topic))];
+  const filterBox = document.getElementById("topicFilters");
+  filterBox.innerHTML = topics.map(t =>
+    '<button class="topic-btn ' + (t === selectedTopic ? 'active' : '') + '" onclick="renderVocab(\'' + t + '\')">' + escapeHtml(t) + '</button>'
+  ).join("");
+
+  const searchInp = document.getElementById("vocabSearchInput");
+  const query = searchInp ? searchInp.value.trim().toLowerCase() : "";
+  const normQuery = normalizeDe(query);
+
+  let filtered = selectedTopic === "Все" ? vocabulary : vocabulary.filter(v => v.topic === selectedTopic);
+
+  if (query) {
+    filtered = filtered.filter(v => {
+      const deLow = v.de.toLowerCase();
+      const ruLow = v.ru.toLowerCase();
+      const exLow = v.ex.toLowerCase();
+      return deLow.includes(query) || ruLow.includes(query) || exLow.includes(query) ||
+             normalizeDe(deLow).includes(normQuery) || deLow.replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").includes(query);
+    });
   }
+
+  const countLbl = document.getElementById("vocabCountLabel");
+  if (countLbl) {
+    countLbl.textContent = "Показано слов: " + filtered.length + " из " + vocabulary.length;
+  }
+
+  const grid = document.getElementById("vocabGrid");
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="card" style="grid-column: 1 / -1; text-align: center; color: var(--muted);">Ничего не найдено. Попробуй изменить запрос или выбрать тему «Все».</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(item =>
+    '<div class="word-card">' +
+      '<div class="word-de">' + escapeHtml(item.de) + '</div>' +
+      '<div class="word-ru ' + (hideTranslations ? 'hidden-tr' : '') + '" onclick="revealOne(this)">' + escapeHtml(item.ru) + '</div>' +
+      '<div class="word-ex">' + escapeHtml(item.ex) + '</div>' +
+    '</div>'
+  ).join("");
+}
 
   const examSheets = [
     // ЛИСТ 1

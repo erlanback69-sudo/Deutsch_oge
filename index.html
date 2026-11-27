@@ -998,6 +998,15 @@
   </div>
 
   <div id="raContainer"></div>
+    <div class="card" style="border-left: 5px solid var(--green, #2e7d32);">
+    <h3 style="margin-bottom: 8px;">🎙 Диктофон и библиотека записей</h3>
+    <p id="recStatus" style="font-size: 0.9rem; color: var(--muted); margin-bottom: 10px;">Нажми «Записать», чтобы прочитать текст вслух и проверить себя</p>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+      <button type="button" class="topic-btn" id="recStartBtn" onclick="startVoiceRecord()">🔴 Записать</button>
+      <button type="button" class="topic-btn" id="recStopBtn" onclick="stopVoiceRecord()" disabled>⏹ Стоп</button>
+    </div>
+    <div id="recordingsList"></div>
+    </div>
 </section>
 </main>
 <script>
@@ -3804,6 +3813,112 @@ function renderReadingAloud() {
 }
 
 renderReadingAloud();
+  // === ДИКТОФОН И БИБЛИОТЕКА ЗАПИСЕЙ СЕССИИ ===
+let mediaRecorder = null;
+let audioChunks = [];
+let sessionRecordings = [];
+let recTimerInterval = null;
+let recSeconds = 0;
+
+async function startVoiceRecord() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert("Ваш браузер не поддерживает запись с микрофона.");
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) audioChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+      const mimeType = mediaRecorder.mimeType || "audio/webm";
+      const ext = mimeType.includes("mp4") ? "m4a" : (mimeType.includes("ogg") ? "ogg" : "webm");
+      const blob = new Blob(audioChunks, { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      const textNum = typeof currentRaIndex === "number" ? currentRaIndex + 1 : 1;
+
+      sessionRecordings.unshift({
+        id: Date.now(),
+        title: `Текст ${textNum} (${timeStr})`,
+        duration: formatRaTime(recSeconds),
+        url: url,
+        fileName: `oge_deutsch_text${textNum}_${timeStr.replace(/:/g, "-")}.${ext}`
+      });
+
+      stream.getTracks().forEach(track => track.stop());
+      renderRecordingsList();
+    };
+
+    mediaRecorder.start();
+    recSeconds = 0;
+    const statusEl = document.getElementById("recStatus");
+    const startBtn = document.getElementById("recStartBtn");
+    const stopBtn = document.getElementById("recStopBtn");
+
+    if (startBtn) startBtn.disabled = true;
+    if (stopBtn) stopBtn.disabled = false;
+    if (statusEl) statusEl.textContent = "🔴 Идёт запись: 00:00";
+
+    recTimerInterval = setInterval(() => {
+      recSeconds++;
+      if (statusEl) statusEl.textContent = `🔴 Идёт запись: ${formatRaTime(recSeconds)}`;
+    }, 1000);
+  } catch (err) {
+    alert("Нет доступа к микрофону. Разреши доступ в настройках браузера.");
+  }
+}
+
+function stopVoiceRecord() {
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+  }
+  clearInterval(recTimerInterval);
+  const statusEl = document.getElementById("recStatus");
+  const startBtn = document.getElementById("recStartBtn");
+  const stopBtn = document.getElementById("recStopBtn");
+
+  if (startBtn) startBtn.disabled = false;
+  if (stopBtn) stopBtn.disabled = true;
+  if (statusEl) statusEl.textContent = "✅ Запись сохранена в библиотеку сессии";
+}
+
+function deleteRecording(id) {
+  const idx = sessionRecordings.findIndex(r => r.id === id);
+  if (idx !== -1) {
+    URL.revokeObjectURL(sessionRecordings[idx].url);
+    sessionRecordings.splice(idx, 1);
+    renderRecordingsList();
+  }
+}
+
+function renderRecordingsList() {
+  const box = document.getElementById("recordingsList");
+  if (!box) return;
+  if (sessionRecordings.length === 0) {
+    box.innerHTML = `<div style="font-size: 0.85rem; color: var(--muted);">Пока нет записей в этой сессии.</div>`;
+    return;
+  }
+  box.innerHTML = sessionRecordings.map(rec => `
+    <div style="border: 1px solid var(--border, #ccc); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 8px; flex-wrap: wrap;">
+        <strong>${escapeHtml(rec.title)} — ${escapeHtml(rec.duration)}</strong>
+        <div style="display: flex; gap: 6px;">
+          <a href="${rec.url}" download="${escapeHtml(rec.fileName)}" class="topic-btn" style="text-decoration: none; font-size: 0.85rem;">⬇ Скачать</a>
+          <button type="button" class="topic-btn" style="font-size: 0.85rem;" onclick="deleteRecording(${rec.id})">🗑</button>
+        </div>
+      </div>
+      <audio controls src="${rec.url}" style="width: 100%; height: 36px;"></audio>
+    </div>
+  `).join("");
+}
+
+renderRecordingsList();
   buildFcQueue();
 </script>
 </body>

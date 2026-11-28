@@ -501,6 +501,64 @@
       font-size: 0.95rem;
       cursor: pointer;
     }
+    /* Чтение 12–19 (Richtig / Falsch / Nicht gesagt) */
+.r12-text-box {
+  background: var(--card-bg, #f8fafc);
+  border-left: 4px solid var(--primary, #2563eb);
+  padding: 14px 16px;
+  border-radius: 8px;
+  line-height: 1.65;
+  margin-bottom: 18px;
+  font-size: 1rem;
+}
+.r12-item {
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.r12-statement {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.r12-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.r12-opt-btn {
+  flex: 1 1 110px;
+  padding: 8px 10px;
+  border: 1px solid var(--border, #cbd5e1);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.r12-opt-btn.selected {
+  background: var(--primary, #2563eb);
+  color: #fff;
+  border-color: var(--primary, #2563eb);
+}
+.r12-opt-btn.correct {
+  background: #16a34a !important;
+  color: #fff !important;
+  border-color: #16a34a !important;
+}
+.r12-opt-btn.wrong {
+  background: #dc2626 !important;
+  color: #fff !important;
+  border-color: #dc2626 !important;
+}
+.r12-explain {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.14);
+  font-size: 0.88rem;
+  display: none;
+}
   </style>
 </head>
 <body>
@@ -526,6 +584,7 @@
   <button onclick="switchTab('cards', this)">🃏 Карточки (свайпы)</button>
   <button onclick="switchTab('readingAloud', this)">📖 Чтение вслух</button>
   <button onclick="switchTab('letter', this)">✉️ Письмо (35)</button>
+  <button class="tab-btn" onclick="switchTab('reading12', this)">Чтение 12–19</button>
 </nav>
 
 <main>
@@ -1056,6 +1115,19 @@
 
   <div id="letterCheckResult"></div>
 </section>
+  <section id="reading12" class="tab-section">
+  <div class="card">
+    <h2>Чтение: Задания 12–19 (ОГЭ)</h2>
+    <p class="subtitle">Прочитайте текст и определите, какие из приведённых утверждений соответствуют содержанию текста (<b>1 — Richtig</b>), какие не соответствуют (<b>2 — Falsch</b>) и о чём в тексте не сказано (<b>3 — Im Text nicht gesagt</b>).</p>
+
+    <div class="controls-row" style="margin-bottom: 14px;">
+      <label for="r12Select"><b>Выберите текст:</b></label>
+      <select id="r12Select" onchange="renderReading12()"></select>
+    </div>
+
+    <div id="r12Container"></div>
+  </div>
+  </section>
 </main>
 <script>
   // База заданий по грамматике (задания 20-28 ОГЭ — 15 штук)
@@ -5191,6 +5263,127 @@ function copyLetterForAI() {
 }
 
 renderLetterTrainer();
+  // === Чтение 12-19 (Richtig / Falsch / Nicht gesagt) ===
+const reading12Tasks = [
+  {
+    id: "r12_1",
+    title: "Вариант 1 — Ein besonderes Schulprojekt",
+    text: "An der Schiller-Schule in München gibt es seit zwei Jahren ein ungewöhnliches Projekt: Jeden Freitagvormittag arbeiten die Schüler der achten und neunten Klassen nicht im Klassenzimmer, sondern im Schulgarten. Dort pflanzen sie Gemüse, Kräuter und Obstbäume. Die Idee hatte die Biologielehrerin Frau Weber, weil viele Jugendliche heute kaum noch wissen, wie Karotten oder Kartoffeln wachsen. Die geernteten Produkte werden in der Schulküche für das Mittagessen verwendet. Einmal im Monat verkaufen die Schüler außerdem selbst gemachte Marmelade auf dem Stadtmarkt. Von dem Geld kauft die Schule neue Gartengeräte und Samen.",
+    items: [
+      { q: "12. Das Gartenprojekt an der Schiller-Schule läuft schon seit fünf Jahren.", ans: 2, proof: "Falsch: В тексте сказано «seit zwei Jahren» (уже два года), а не пять лет." },
+      { q: "13. Am Freitagmorgen lernen die Acht- und Neuntklässler draußen im Garten.", ans: 1, proof: "Richtig: «Jeden Freitagvormittag arbeiten die Schüler der achten und neunten Klassen... im Schulgarten»." },
+      { q: "14. Der Schuldirektor hat dieses Projekt vorgeschlagen.", ans: 2, proof: "Falsch: Идея принадлежала учительнице биологии фрау Вебер («Die Idee hatte die Biologielehrerin Frau Weber»)." },
+      { q: "15. Die Eltern der Schüler helfen regelmäßig bei der Gartenarbeit.", ans: 3, proof: "Nicht gesagt: Про помощь родителей в тексте ничего не упоминается." },
+      { q: "16. Das geerntete Gemüse wird für das Schulmittagessen genutzt.", ans: 1, proof: "Richtig: «Die geernteten Produkte werden in der Schulküche für das Mittagessen verwendet»." },
+      { q: "17. Jede Woche verkaufen die Schüler Marmelade auf dem Markt.", ans: 2, proof: "Falsch: Они продают варенье раз в месяц («Einmal im Monat»), а не каждую неделю." },
+      { q: "18. Mit dem verdienten Geld bezahlt die Schule Werkzeuge und Samen.", ans: 1, proof: "Richtig: «Von dem Geld kauft die Schule neue Gartengeräte und Samen»." }
+    ]
+  },
+  {
+    id: "r12_2",
+    title: "Вариант 2 — Fahrradfreundliche Stadt",
+    text: "Immer mehr Menschen in Deutschland lassen ihr Auto stehen und fahren mit dem Fahrrad zur Arbeit oder zur Schule. Besonders in Freiburg im Breisgau ist das Fahrrad das wichtigste Verkehrsmittel. Die Stadt hat über 400 Kilometer Radwege gebaut, die sicher und gut beleuchtet sind. Am Hauptbahnhof gibt es sogar ein großes Fahrradparkhaus mit Platz für 1.000 Räder und einer eigenen Reparaturwerkstatt. Im Sommer finden in Freiburg oft Radtouren für Touristen statt, bei denen man die Altstadt und die Weinberge kennenlernen kann. Trotz des guten Angebots wünschen sich viele Radfahrer noch mehr kostenlose Ladestationen für E-Bikes im Zentrum.",
+    items: [
+      { q: "12. In Deutschland nutzen immer weniger Menschen das Fahrrad für den Weg zur Arbeit.", ans: 2, proof: "Falsch: В тексте наоборот: «Immer mehr Menschen... fahren mit dem Fahrrad zur Arbeit»." },
+      { q: "13. Freiburg im Breisgau verfügt über mehr als 400 Kilometer Fahrradwege.", ans: 1, proof: "Richtig: «Die Stadt hat über 400 Kilometer Radwege gebaut»." },
+      { q: "14. Im Fahrradparkhaus am Hauptbahnhof kann man sein Rad auch reparieren lassen.", ans: 1, proof: "Richtig: Там есть мастерская («einer eigenen Reparaturwerkstatt»)." },
+      { q: "15. Das Parken im Fahrradparkhaus am Bahnhof ist für Schüler kostenlos.", ans: 3, proof: "Nicht gesagt: О стоимости парковки для школьников в тексте ничего не сказано." },
+      { q: "16. Im Sommer werden in Freiburg geführte Radtouren für Gäste der Stadt angeboten.", ans: 1, proof: "Richtig: «Im Sommer finden in Freiburg oft Radtouren für Touristen statt»." },
+      { q: "17. Im Stadtzentrum gibt es bereits genug Ladestationen für Elektrofahrräder.", ans: 2, proof: "Falsch: Велосипедисты хотят ещё больше зарядных станций («wünschen sich... noch mehr kostenlose Ladestationen»)." },
+      { q: "18. Im Winter sind die Radwege in Freiburg oft wegen Schnee gesperrt.", ans: 3, proof: "Nicht gesagt: Про зиму и снег в тексте информации нет." }
+    ]
+  },
+  {
+    id: "r12_3",
+    title: "Вариант 3 — Ehrenamt im Tierheim",
+    text: "Lukas ist 15 Jahre alt und verbringt jeden Samstagnachmittag im städtischen Tierheim. Seit dem letzten Herbst hilft er dort freiwillig, weil seine Familie in einer kleinen Wohnung lebt und keinen eigenen Hund halten darf. Zu seinen Aufgaben gehört es, mit den Hunden spazieren zu gehen, die Katzen zu füttern und die Käfige sauber zu machen. Am Anfang hatte Lukas etwas Angst vor großen Hunden, aber eine erfahrene Mitarbeiterin hat ihm gezeigt, wie man ruhig mit den Tieren umgeht. Jetzt hat er sogar einen Lieblingshund namens Bello. Nach dem Abitur möchte Lukas Tiermedizin studieren, um später als Tierarzt zu arbeiten.",
+    items: [
+      { q: "12. Lukas arbeitet am Samstagvormittag im Tierheim.", ans: 2, proof: "Falsch: Он приходит после обеда («jeden Samstagnachmittag»), а не утром." },
+      { q: "13. Lukas hat zu Hause keinen Hund, weil die Wohnung seiner Familie zu klein ist.", ans: 1, proof: "Richtig: «weil seine Familie in einer kleinen Wohnung lebt und keinen eigenen Hund halten darf»." },
+      { q: "14. Im Tierheim kümmert sich Lukas sowohl um Hunde als auch um Katzen.", ans: 1, proof: "Richtig: Он гуляет с собаками и кормит кошек («mit den Hunden spazieren zu gehen, die Katzen zu füttern»)." },
+      { q: "15. Lukas bekommt vom Tierheim ein kleines Taschengeld für seine Hilfe.", ans: 2, proof: "Falsch: Он помогает добровольно / бесплатно («hilft er dort freiwillig»)." },
+      { q: "16. Eine Mitarbeiterin hat Lukas geholfen, seine Angst vor großen Hunden zu überwinden.", ans: 1, proof: "Richtig: «eine erfahrene Mitarbeiterin hat ihm gezeigt, wie man ruhig mit den Tieren umgeht»." },
+      { q: "17. Der Hund Bello ist erst vor zwei Wochen ins Tierheim gekommen.", ans: 3, proof: "Nicht gesagt: Когда Белло попал в приют, в тексте не указано." },
+      { q: "18. Lukas plant, nach der Schule Tierarzt zu werden.", ans: 1, proof: "Richtig: «möchte Lukas Tiermedizin studieren, um später als Tierarzt zu arbeiten»." }
+    ]
+  }
+];
+let r12UserAnswers = {};
+
+function initReading12() {
+  const sel = document.getElementById("r12Select");
+  if (!sel) return;
+  sel.innerHTML = reading12Tasks
+    .map((t, idx) => `<option value="${idx}">${escapeHtml(t.title)}</option>`)
+    .join("");
+  renderReading12();
+}
+
+function renderReading12() {
+  const sel = document.getElementById("r12Select");
+  const box = document.getElementById("r12Container");
+  if (!sel || !box) return;
+  const task = reading12Tasks[Number(sel.value) || 0];
+  r12UserAnswers = {};
+
+  const itemsHtml = task.items
+    .map(
+      (item, i) => `
+      <div class="r12-item" id="r12Item_${i}">
+        <div class="r12-statement">${escapeHtml(item.q)}</div>
+        <div class="r12-options">
+          <button type="button" class="r12-opt-btn" data-q="${i}" data-val="1" onclick="selectR12Opt(${i}, 1, this)">1 — Richtig</button>
+          <button type="button" class="r12-opt-btn" data-q="${i}" data-val="2" onclick="selectR12Opt(${i}, 2, this)">2 — Falsch</button>
+          <button type="button" class="r12-opt-btn" data-q="${i}" data-val="3" onclick="selectR12Opt(${i}, 3, this)">3 — Nicht gesagt</button>
+        </div>
+        <div class="r12-explain" id="r12Exp_${i}">${escapeHtml(item.proof)}</div>
+      </div>`
+    )
+    .join("");
+
+  box.innerHTML = `
+    <div class="r12-text-box">${escapeHtml(task.text)}</div>
+    ${itemsHtml}
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+      <button type="button" class="btn exam-submit" style="flex:2; margin-top:0;" onclick="checkReading12()">Проверить ответы</button>
+      <button type="button" class="topic-btn" style="flex:1;" onclick="renderReading12()">Сбросить</button>
+    </div>
+    <div id="r12Result" style="margin-top:14px; font-weight:700;"></div>
+  `;
+}
+
+function selectR12Opt(qIdx, val, btn) {
+  r12UserAnswers[qIdx] = val;
+  const parent = btn.parentElement;
+  parent.querySelectorAll(".r12-opt-btn").forEach((b) => b.classList.remove("selected"));
+  btn.classList.add("selected");
+}
+
+function checkReading12() {
+  const sel = document.getElementById("r12Select");
+  const resBox = document.getElementById("r12Result");
+  if (!sel || !resBox) return;
+  const task = reading12Tasks[Number(sel.value) || 0];
+
+  let score = 0;
+  task.items.forEach((item, i) => {
+    const chosen = r12UserAnswers[i];
+    const buttons = document.querySelectorAll(`#r12Item_${i} .r12-opt-btn`);
+    buttons.forEach((b) => {
+      const bVal = Number(b.dataset.val);
+      b.classList.remove("correct", "wrong");
+      if (bVal === item.ans) b.classList.add("correct");
+      else if (bVal === chosen && chosen !== item.ans) b.classList.add("wrong");
+    });
+    const exp = document.getElementById(`r12Exp_${i}`);
+    if (exp) exp.style.display = "block";
+    if (chosen === item.ans) score++;
+  });
+
+  resBox.textContent = `Результат: ${score} из ${task.items.length} правильных ответов.`;
+}
+
+initReading12();
   buildFcQueue();
 </script>
 </body>
